@@ -1,5 +1,673 @@
-<!doctype html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LoaderOPS | Warehouse Dashboard Demo</title><style>
-:root{font-family:Arial,sans-serif;color:#26384b;background:#f4f7fb}*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}.hidden{display:none!important}.login-wrap{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(135deg,#e8f1f9,#f6fafb)}.login{width:min(420px,100%);background:white;padding:38px;border-radius:22px;box-shadow:0 15px 55px #1c3b5a20}.login h1{color:#1e3a5f;margin:0;font-size:36px}.login p{color:#64748b}.field{display:flex;flex-direction:column;gap:7px;margin-bottom:15px}.field label{font-size:13px;font-weight:700}.field input,.field select,.field textarea,.filters select,.filters input{width:100%;border:1px solid #d7e1e9;border-radius:9px;padding:11px;background:white;color:#24364a}.btn{background:#7798b8;color:white;border:0;border-radius:9px;padding:11px 17px;font-weight:700}.btn:hover{filter:brightness(.94)}.btn.alt{background:#e9f0f6;color:#234766}.btn.danger{background:#fee2e2;color:#a52b2b}.btn.green{background:#72a98f}.small{padding:7px 10px;font-size:12px}.muted{color:#708196;font-size:13px}.app{display:flex;min-height:100vh}.sidebar{width:245px;flex-shrink:0;background:#fff;border-right:1px solid #e4ebf2;padding:26px 17px}.brand{font-size:23px;font-weight:800;color:#1e3a5f;letter-spacing:1px}.brand-sub{font-size:12px;color:#7798b8;margin:5px 0 35px}.nav{display:flex;flex-direction:column;gap:8px}.nav button{text-align:left;background:transparent;border:0;padding:13px;border-radius:9px;color:#284a69;font-weight:700}.nav button.active,.nav button:hover{background:#7798b8;color:white}.content{padding:30px;flex:1;min-width:0}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:27px}.eyebrow{font-size:12px;color:#7798b8;letter-spacing:2px;font-weight:800}.top h1{font-size:30px;color:#1e3a5f;margin:6px 0}.account{display:flex;gap:12px;align-items:center}.pill{background:#e0efff;color:#20518c;border-radius:50px;padding:8px 12px;font-size:12px;font-weight:700}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:20px 0}.card,.panel{background:#fff;border:1px solid #e3eaf0;border-radius:16px;box-shadow:0 5px 20px #243f5b0a}.card{padding:23px}.card .value{font-size:30px;font-weight:800;color:#1e3a5f;margin-top:13px}.card .label{font-size:13px;color:#708196}.panel{padding:23px;margin-bottom:22px}.panelhead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}.panel h2{font-size:20px;color:#1e3a5f;margin:0 0 6px}.panel p{margin:0}.actions{display:flex;gap:8px;flex-wrap:wrap}.filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:820px}th,td{text-align:left;padding:13px;border-bottom:1px solid #e6ecf1;font-size:13px}th{background:#f6f9fc;color:#244765}td{color:#36495b}.status{display:inline-block;border-radius:40px;padding:6px 9px;background:#fff2d4;color:#9c6b00;font-size:12px;font-weight:700}.status.ok{background:#dcf5e6;color:#187b48}.status.bad{background:#ffe5e5;color:#a62f2f}.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;background:#f7fafc;padding:18px;border-radius:12px;margin-bottom:20px}.formgrid .actions{grid-column:1/-1;justify-content:flex-end}.bar-area{display:grid;grid-template-columns:repeat(5,minmax(70px,1fr));height:255px;gap:14px;align-items:end;padding-top:20px}.bar-col{text-align:center;font-size:12px;color:#61758b}.bars{height:195px;border-bottom:1px solid #cbd5e1;display:flex;gap:8px;justify-content:center;align-items:end}.bar{width:30px;border-radius:5px 5px 0 0;min-height:2px;background:#72a98f;position:relative}.bar.out{background:#7798b8}.bar span{position:absolute;top:-19px;left:0;right:0;text-align:center;font-size:11px}.legend{display:flex;gap:15px;font-size:12px}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;background:#72a98f}.dot.blue{background:#7798b8}.notice{background:#fff8e7;border:1px solid #f3e4b5;padding:12px;border-radius:10px;font-size:12px;color:#8b6825;margin:18px 0}.empty{text-align:center;padding:35px;color:#718096}.demo-tag{font-size:11px;background:#e7f2ff;padding:6px 9px;border-radius:7px;color:#32628b}.rowtools{display:flex;gap:5px}.footer{color:#8998a8;font-size:12px;margin-top:25px}@media(max-width:1050px){.cards{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:repeat(2,1fr)}}@media(max-width:750px){.app{display:block}.sidebar{width:100%;padding:14px}.brand-sub{margin-bottom:12px}.nav{flex-direction:row;overflow:auto}.nav button{white-space:nowrap}.content{padding:15px}.top{align-items:flex-start;flex-direction:column}.cards{gap:10px}.card{padding:16px}.card .value{font-size:24px}.formgrid,.filters{grid-template-columns:1fr}.panel{padding:15px}}
-</style></head><body><div id="login" class="login-wrap"><div class="login"><div class="demo-tag" style="display:inline-block;margin-bottom:14px">WAREHOUSE DEMO · TANPA DATABASE</div><h1>LoaderOPS</h1><p>Warehouse Operational Dashboard<br><small>By Rosma</small></p><form id="loginForm"><div class="field"><label>Username</label><input id="username" placeholder="admin / spv / mijan / ompong / safar" required autocomplete="username"></div><div class="field"><label>Password</label><input id="password" type="password" placeholder="demo123" required autocomplete="current-password"></div><button class="btn" style="width:100%">Masuk ke Dashboard</button></form><div class="notice">Akun demo: <b>admin</b>, <b>spv</b>, <b>mijan</b>, <b>ompong</b>, <b>safar</b><br>Password semua akun: <b>demo123</b>. Login ini hanya simulasi, bukan autentikasi aman.</div></div></div><div id="app" class="app hidden"><aside class="sidebar"><div class="brand">LOADEROPS</div><div class="brand-sub" id="sideRole">Warehouse Operations</div><nav class="nav" id="nav"></nav></aside><div class="content"><header class="top"><div><div class="eyebrow">LOADEROPS · DEMO</div><h1 id="pageTitle">Dashboard</h1><div class="muted" id="pageSubtitle"></div></div><div class="account"><span class="pill" id="roleBadge"></span><button class="btn alt" id="logout">Logout</button></div></header><div id="view"></div><div class="footer">LoaderOPS Dummy · GitHub Pages · Data tersimpan di browser ini saja</div></div></div><script>
-(()=>{'use strict';const USERS={admin:{name:'Administrator',role:'admin'},spv:{name:'Supervisor',role:'spv'},mijan:{name:'Mijan',role:'loader'},ompong:{name:'Ompong',role:'loader'},safar:{name:'Safar',role:'loader'}};const KEY='loaderops-github-demo-v1';const TODAY=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};const addDay=n=>{const d=new Date();d.setDate(d.getDate()+n);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};const seed=()=>{let a=[];for(let i=0;i<32;i++){const type=i%2?'Outbound':'Inbound',loader=['mijan','ompong','safar'][i%3];a.push({id:'demo-'+i,type,date:addDay(-(i%23)),reference:type==='Inbound'?`B ${9100+i} XYZ`:`BSIU${8021400+i}`,carton:70+(i*37)%240,loader,status:i%5===0?'Tidak Sesuai':i%3===0?'Sesuai':'Belum Dicocokkan',note:i%5===0?'Selisih carton pada pemeriksaan':'',created:new Date(Date.now()-i*3600000).toISOString()})}return {activities:a,logs:[{id:'seed',at:new Date().toISOString(),user:'Sistem',action:'INISIALISASI',type:'Demo',reference:'-',detail:'Data contoh warehouse dimuat'}]}};let db;try{db=JSON.parse(localStorage.getItem(KEY))||seed();if(!Array.isArray(db.activities)||!Array.isArray(db.logs))db=seed()}catch{db=seed()}let user=sessionStorage.getItem('loaderops-user')||'',menu='dashboard',filterLoader='all',editing=null,formOpen=false,report={start:TODAY().slice(0,8)+'01',end:TODAY(),loader:'all',type:'all'};const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=n=>Number(n).toLocaleString('id-ID'),date=s=>s?String(s).split('-').reverse().join('/'):'-',stamp=s=>new Date(s).toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'}),save=()=>{try{localStorage.setItem(KEY,JSON.stringify(db))}catch{alert('Penyimpanan browser penuh/tidak tersedia.')}},isLoader=()=>USERS[user]?.role==='loader',canReview=()=>['admin','spv'].includes(USERS[user]?.role),name=u=>USERS[u]?.name||u,visible=()=>db.activities.filter(a=>!isLoader()||a.loader===user),sort=rows=>[...rows].sort((a,b)=>b.date.localeCompare(a.date)||b.created.localeCompare(a.created)),statusClass=s=>s==='Sesuai'?'ok':s==='Tidak Sesuai'?'bad':'',statusHTML=s=>`<span class="status ${statusClass(s)}">${esc(s)}</span>`,options=(all=true)=>`${all?'<option value="all">Semua loader</option>':''}${['mijan','ompong','safar'].map(x=>`<option value="${x}">${name(x)}</option>`).join('')}`,log=(action,a,detail)=>{db.logs.unshift({id:crypto.randomUUID?.()||String(Date.now()+Math.random()),at:new Date().toISOString(),user:name(user),action,type:a.type,reference:a.reference,detail});save()},go=m=>{menu=m;editing=null;formOpen=false;render()},btn=(label,action,cls='alt')=>`<button class="btn ${cls} small" data-action="${action}">${label}</button>`;function showApp(){const logged=!!USERS[user];$('login').classList.toggle('hidden',logged);$('app').classList.toggle('hidden',!logged);if(logged)render()};function render(){if(!USERS[user])return showApp();const items=[['dashboard','Dashboard'],['all','Semua Aktivitas'],['inbound','Aktivitas Inbound'],['outbound','Aktivitas Outbound'],...(!isLoader()?[['loader','Data Loader'],['reports','Rekap & Laporan'],['audit','Audit Log']]:[])];$('nav').innerHTML=items.map(([id,label])=>`<button data-menu="${id}" class="${menu===id?'active':''}">${label}</button>`).join('');$('sideRole').textContent=USERS[user].role.toUpperCase()+' Panel';$('roleBadge').textContent=USERS[user].role.toUpperCase();$('pageTitle').textContent=items.find(x=>x[0]===menu)?.[1]||'Dashboard';$('pageSubtitle').textContent=menu==='dashboard'?'Selamat datang, '+name(user):'Kelola dan pantau operasional warehouse';$('view').innerHTML=({dashboard,all:allView,inbound:()=>activityView('Inbound'),outbound:()=>activityView('Outbound'),loader:loaderView,reports:reportView,audit:auditView}[menu]||dashboard)();if($('dashLoader'))$('dashLoader').value=filterLoader;if($('reportLoader'))$('reportLoader').value=report.loader;if($('reportType'))$('reportType').value=report.type};const summary=(arr)=>{let today=arr.filter(a=>a.date===TODAY());return `<div class="cards">${[['Aktivitas Hari Ini',today.length],['Carton Inbound Hari Ini',today.filter(a=>a.type==='Inbound').reduce((s,a)=>s+a.carton,0)],['Carton Outbound Hari Ini',today.filter(a=>a.type==='Outbound').reduce((s,a)=>s+a.carton,0)],['Total Aktivitas Tercatat',arr.length]].map(([l,v])=>`<div class="card"><div class="label">${l}</div><div class="value">${fmt(v)}</div></div>`).join('')}</div>`};function dashboard(){const arr=visible().filter(a=>isLoader()||filterLoader==='all'||a.loader===filterLoader),month=TODAY().slice(0,7),weeks=Array.from({length:5},(_,i)=>{const subset=arr.filter(a=>a.date.startsWith(month)&&Math.floor((Number(a.date.slice(8))-1)/7)===i);return {inbound:subset.filter(a=>a.type==='Inbound').length,outbound:subset.filter(a=>a.type==='Outbound').length}}),max=Math.max(1,...weeks.flatMap(x=>[x.inbound,x.outbound]));return `${!isLoader()?`<div class="panel"><div class="field" style="max-width:270px;margin:0"><label>Filter loader</label><select id="dashLoader">${options()}</select></div></div>`:''}${summary(arr)}<section class="panel"><div class="panelhead"><div><h2>Grafik Aktivitas Bulanan</h2><p class="muted">${new Date().toLocaleString('id-ID',{month:'long',year:'numeric'})} · Jumlah aktivitas per minggu</p></div><div class="legend"><span><i class="dot"></i>Inbound</span><span><i class="dot blue"></i>Outbound</span></div></div><div class="tablewrap"><div class="bar-area" style="min-width:460px">${weeks.map((w,i)=>`<div class="bar-col"><div class="bars"><div class="bar" style="height:${w.inbound/max*100}%"><span>${w.inbound||''}</span></div><div class="bar out" style="height:${w.outbound/max*100}%"><span>${w.outbound||''}</span></div></div><b>Minggu ${i+1}</b><div>Tgl ${i*7+1}–${Math.min(i*7+7,new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate())}</div></div>`).join('')}</div></div></section><section class="panel"><div class="panelhead"><div><h2>Aktivitas Tercatat</h2><p class="muted">${arr.length} aktivitas operasional tersedia</p></div><button class="btn" data-menu="all">Lihat Semua Aktivitas</button></div>${table(sort(arr).slice(0,5),false)}</section>`}function table(rows,actions=false){return `<div class="tablewrap"><table><thead><tr><th>Tanggal</th><th>Jenis</th><th>Loader</th><th>No. Mobil / Container</th><th>Total Carton</th><th>Status</th><th>Keterangan</th>${actions?'<th>Aksi</th>':''}</tr></thead><tbody>${rows.length?rows.map(a=>`<tr><td>${date(a.date)}</td><td>${a.type}</td><td>${esc(name(a.loader))}</td><td>${esc(a.reference)}</td><td>${fmt(a.carton)}</td><td>${statusHTML(a.status)}</td><td>${esc(a.note||'-')}</td>${actions?`<td><div class="rowtools">${isLoader()?(a.loader===user&&a.status==='Belum Dicocokkan'?`${btn('Edit','edit:'+a.id)}${btn('Hapus','delete:'+a.id,'danger')}`:'Terkunci'):canReview()?`${btn('Cocokkan','review:'+a.id,'green')}`:'-'}</div></td>`:''}</tr>`).join(''):`<tr><td class="empty" colspan="${actions?8:7}">Belum ada data.</td></tr>`}</tbody></table></div>`}function allView(){return `<section class="panel"><div class="panelhead"><div><h2>Semua Aktivitas</h2><p class="muted">Gabungan aktivitas inbound dan outbound</p></div></div>${table(sort(visible()),false)}</section>`}function activityView(type){const arr=sort(visible().filter(a=>a.type===type));const a=editing?db.activities.find(x=>x.id===editing):null;return `<section class="panel"><div class="panelhead"><div><h2>Daftar Aktivitas ${type}</h2><p class="muted">${type==='Inbound'?'Pencocokan berdasarkan nomor mobil':'Pencocokan berdasarkan nomor container'}</p></div>${isLoader()?`<button class="btn" data-action="toggleForm">${formOpen?'Tutup Form':'+ Tambah '+type}</button>`:''}</div>${formOpen&&isLoader()?`<form id="activityForm" class="formgrid"><div class="field"><label>Tanggal</label><input name="date" type="date" value="${esc(a?.date||TODAY())}" required></div><div class="field"><label>${type==='Inbound'?'Nomor Mobil':'Nomor Container'}</label><input name="reference" maxlength="40" value="${esc(a?.reference||'')}" placeholder="${type==='Inbound'?'B 9123 XYZ':'BSIU8021455'}" required></div><div class="field"><label>Total Carton</label><input name="carton" type="number" min="1" step="1" value="${a?.carton||''}" required></div><div class="actions"><button class="btn alt" type="button" data-action="cancelForm">Batal</button><button class="btn" type="submit">${editing?'Simpan Perubahan':'Simpan '+type}</button></div></form>`:''}${table(arr,true)}</section>`}function loaderView(){return `<section class="panel"><h2>Data Loader</h2><p class="muted">Ringkasan kinerja loader berdasarkan data simulasi</p><div class="cards" style="grid-template-columns:repeat(3,minmax(0,1fr))">${['mijan','ompong','safar'].map(l=>{const a=db.activities.filter(x=>x.loader===l);return `<div class="card"><div class="label">${name(l)}</div><div class="value">${a.length}</div><div class="muted">aktivitas · ${fmt(a.reduce((s,x)=>s+x.carton,0))} carton</div></div>`}).join('')}</div></section>`}const reportRows=()=>sort(db.activities.filter(a=>(!report.start||a.date>=report.start)&&(!report.end||a.date<=report.end)&&(report.loader==='all'||a.loader===report.loader)&&(report.type==='all'||a.type===report.type)));function reportView(){const a=reportRows();return `<section class="panel"><div class="panelhead"><div><h2>Rekap & Laporan</h2><p class="muted">Filter aktivitas lalu ekspor CSV (Excel) atau cetak/simpan PDF</p></div><div class="actions"><button class="btn" data-action="csv">Ekspor CSV</button><button class="btn alt" data-action="pdf">Cetak / PDF</button></div></div><div class="filters"><div class="field"><label>Tanggal Mulai</label><input id="reportStart" type="date" value="${report.start}"></div><div class="field"><label>Tanggal Akhir</label><input id="reportEnd" type="date" value="${report.end}"></div><div class="field"><label>Loader</label><select id="reportLoader">${options()}</select></div><div class="field"><label>Jenis</label><select id="reportType"><option value="all">Semua aktivitas</option><option>Inbound</option><option>Outbound</option></select></div></div><div class="cards">${[['Total Aktivitas',a.length],['Carton Inbound',a.filter(x=>x.type==='Inbound').reduce((s,x)=>s+x.carton,0)],['Carton Outbound',a.filter(x=>x.type==='Outbound').reduce((s,x)=>s+x.carton,0)],['Belum Dicocokkan',a.filter(x=>x.status==='Belum Dicocokkan').length]].map(([l,v])=>`<div class="card"><div class="label">${l}</div><div class="value">${fmt(v)}</div></div>`).join('')}</div>${table(a)}</section>`}function auditView(){return `<section class="panel"><div class="panelhead"><div><h2>Audit Log</h2><p class="muted">Riwayat perubahan pada browser ini</p></div>${btn('Reset Data Demo','reset','danger')}</div><div class="tablewrap"><table><thead><tr><th>Waktu</th><th>User</th><th>Aksi</th><th>Jenis</th><th>Referensi</th><th>Detail</th></tr></thead><tbody>${db.logs.map(x=>`<tr><td>${stamp(x.at)}</td><td>${esc(x.user)}</td><td>${esc(x.action)}</td><td>${esc(x.type)}</td><td>${esc(x.reference)}</td><td>${esc(x.detail)}</td></tr>`).join('')}</tbody></table></div></section>`}function exportCSV(){const rows=reportRows();if(!rows.length)return alert('Tidak ada data untuk diekspor.');const csv=[['Tanggal','Jenis','Loader','Referensi','Total Carton','Status','Keterangan'],...rows.map(a=>[date(a.date),a.type,name(a.loader),a.reference,a.carton,a.status,a.note||''])].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=`Rekap_LoaderOPS_${TODAY()}.csv`;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}function printPDF(){const rows=reportRows();if(!rows.length)return alert('Tidak ada data untuk dicetak.');const win=window.open('','_blank');if(!win)return alert('Izinkan pop-up untuk mencetak laporan.');win.document.write(`<html><head><title>Laporan LoaderOPS</title><style>body{font:12px Arial;padding:25px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ccc;padding:6px;text-align:left}th{background:#e5edf5}@page{size:landscape}</style></head><body><h2>Rekap & Laporan LoaderOPS (Demo)</h2><p>Periode: ${esc(report.start)} s.d. ${esc(report.end)} | ${rows.length} aktivitas</p><table><tr><th>Tanggal</th><th>Jenis</th><th>Loader</th><th>Referensi</th><th>Carton</th><th>Status</th><th>Keterangan</th></tr>${rows.map(a=>`<tr><td>${date(a.date)}</td><td>${a.type}</td><td>${esc(name(a.loader))}</td><td>${esc(a.reference)}</td><td>${fmt(a.carton)}</td><td>${esc(a.status)}</td><td>${esc(a.note||'-')}</td></tr>`).join('')}</table><p>Data simulasi, bukan laporan operasional aktual.</p></body></html>`);win.document.close();win.focus();setTimeout(()=>win.print(),300)}document.addEventListener('submit',e=>{if(e.target.id==='loginForm'){e.preventDefault();const u=$('username').value.trim().toLowerCase();if(!USERS[u]||$('password').value!=='demo123')return alert('Username atau password demo salah.');user=u;sessionStorage.setItem('loaderops-user',user);menu='dashboard';showApp()}if(e.target.id==='activityForm'){e.preventDefault();const f=new FormData(e.target),dateValue=String(f.get('date')),ref=String(f.get('reference')).trim().toUpperCase().replace(/\s+/g,' '),carton=Number(f.get('carton')),type=menu==='inbound'?'Inbound':'Outbound';if(!/^\d{4}-\d{2}-\d{2}$/.test(dateValue)||!ref||!Number.isSafeInteger(carton)||carton<1)return alert('Periksa data aktivitas.');if(editing){const a=db.activities.find(x=>x.id===editing);if(!a||a.loader!==user||a.status!=='Belum Dicocokkan')return alert('Data terkunci.');Object.assign(a,{date:dateValue,reference:ref,carton});log('EDIT',a,'Aktivitas diperbarui')}else{const a={id:crypto.randomUUID?.()||String(Date.now()+Math.random()),type,date:dateValue,reference:ref,carton,loader:user,status:'Belum Dicocokkan',note:'',created:new Date().toISOString()};db.activities.push(a);log('TAMBAH',a,`${carton} carton`)}formOpen=false;editing=null;render()}});document.addEventListener('change',e=>{const id=e.target.id;if(id==='dashLoader'){filterLoader=e.target.value;render()}if(id.startsWith('report')){const k={reportStart:'start',reportEnd:'end',reportLoader:'loader',reportType:'type'}[id];if(k){report[k]=e.target.value;render()}}});document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.menu){go(b.dataset.menu);return}const action=b.dataset.action;if(!action)return;if(action==='toggleForm'){formOpen=!formOpen;editing=null;render()}else if(action==='cancelForm'){formOpen=false;editing=null;render()}else if(action==='csv')exportCSV();else if(action==='pdf')printPDF();else if(action==='reset'){if(confirm('Reset seluruh perubahan lokal dan kembalikan data contoh?')){db=seed();save();render()}}else if(action.startsWith('edit:')){const a=db.activities.find(x=>x.id===action.slice(5));if(!a||a.loader!==user||a.status!=='Belum Dicocokkan')return;editing=a.id;formOpen=true;render()}else if(action.startsWith('delete:')){const a=db.activities.find(x=>x.id===action.slice(7));if(!a||a.loader!==user||a.status!=='Belum Dicocokkan')return;if(confirm('Hapus aktivitas ini?')){db.activities=db.activities.filter(x=>x.id!==a.id);log('HAPUS',a,'Aktivitas dihapus');render()}}else if(action.startsWith('review:')){if(!canReview())return;const a=db.activities.find(x=>x.id===action.slice(7));if(!a)return;const status=prompt('Masukkan status: 1 = Sesuai, 2 = Tidak Sesuai, 3 = Belum Dicocokkan',a.status==='Sesuai'?'1':a.status==='Tidak Sesuai'?'2':'3');if(status===null)return;const map={'1':'Sesuai','2':'Tidak Sesuai','3':'Belum Dicocokkan'};if(!map[status])return alert('Pilih angka 1, 2, atau 3.');const note=prompt('Keterangan pencocokan (opsional):',a.note||'');if(note===null)return;a.status=map[status];a.note=note.trim();log('COCOKKAN',a,`${a.status}${a.note?' · '+a.note:''}`);render()}});$('logout').onclick=()=>{user='';sessionStorage.removeItem('loaderops-user');showApp()};save();showApp()})();
-</script></body></html>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoaderOPS | Warehouse Operational Dashboard</title>
+<style>
+:root {
+  --navy:#1e3a5f;
+  --blue:#7798b8;
+  --green:#72a98f;
+  --bg:#f4f7fb;
+  --line:#e2e8f0;
+  --text:#26384b;
+  --muted:#64748b;
+}
+* {box-sizing:border-box}
+body {margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select {font:inherit}
+button {cursor:pointer;border:0;border-radius:9px;padding:10px 15px;background:var(--blue);color:white;font-weight:bold}
+button:hover {filter:brightness(.94)}
+button:disabled {opacity:.5;cursor:not-allowed}
+input,select {width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:8px;background:white}
+label {display:block;margin-bottom:7px;font-size:13px;font-weight:bold}
+h1,h2,h3,p {margin-top:0}
+h1 {font-size:28px;color:var(--navy)}
+h2 {font-size:19px;color:var(--navy)}
+p {color:var(--muted);line-height:1.5}
+.hidden {display:none!important}
+.muted {color:var(--muted);font-size:13px}
+.small {font-size:12px}
+.row {display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.between {justify-content:space-between}
+.primary {background:var(--navy)}
+.green {background:var(--green)}
+.danger {background:#dc6670}
+.light {background:#e9eff5;color:var(--navy)}
+.badge {display:inline-block;border-radius:30px;padding:6px 10px;font-size:12px;font-weight:bold;background:#e2e8f0;color:#334155}
+.badge.ok {background:#dcfce7;color:#166534}
+.badge.bad {background:#fee2e2;color:#991b1b}
+.badge.wait {background:#fef3c7;color:#92400e}
+.demo {background:#fff7df;border:1px solid #f3d895;color:#87641b;padding:10px 14px;border-radius:9px;font-size:12px;margin-bottom:20px}
+.card {background:white;border:1px solid var(--line);border-radius:15px;padding:22px;box-shadow:0 5px 20px #1e3a5f09;margin-bottom:20px}
+.grid {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.kpi {padding:22px;background:white;border:1px solid var(--line);border-radius:14px}
+.kpi .value {font-size:30px;font-weight:bold;color:var(--navy);margin:12px 0}
+.kpi .label {font-size:13px;color:var(--muted)}
+.login-screen {min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+.login-box {width:100%;max-width:420px;background:white;padding:35px;border-radius:20px;box-shadow:0 15px 45px #1e3a5f18}
+.login-box h1 {font-size:38px;margin-bottom:4px}
+.login-box input,.login-box select {margin-bottom:14px}
+.login-box button {width:100%;padding:13px}
+.layout {display:flex;min-height:100vh}
+.sidebar {width:245px;flex-shrink:0;background:white;border-right:1px solid var(--line);padding:25px 16px}
+.brand {font-size:23px;font-weight:800;letter-spacing:1px;color:var(--navy)}
+.brand-sub {font-size:12px;color:var(--muted);margin:6px 0 35px}
+.nav {display:flex;flex-direction:column;gap:7px}
+.nav button {background:transparent;color:var(--navy);text-align:left;padding:13px}
+.nav button.active,.nav button:hover {background:var(--blue);color:white}
+.content {flex:1;min-width:0;padding:30px}
+.header {display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:22px}
+.header h1 {margin:4px 0}
+.header p {margin:0}
+.table-wrap {overflow-x:auto}
+table {width:100%;border-collapse:collapse;min-width:850px;font-size:13px}
+th,td {padding:13px;text-align:left;border-bottom:1px solid var(--line)}
+th {background:#f1f5f9;color:var(--navy)}
+td {vertical-align:middle}
+td button {padding:7px 10px;font-size:12px;margin:2px}
+.filters {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}
+.form-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.form-actions {grid-column:1/-1;display:flex;justify-content:flex-end;gap:10px}
+.chart {display:flex;align-items:end;gap:16px;height:260px;border-bottom:1px solid var(--line);padding:15px}
+.chart-group {flex:1;min-width:55px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;text-align:center}
+.bars {display:flex;align-items:end;justify-content:center;gap:7px;height:190px}
+.bar {width:35%;border-radius:5px 5px 0 0;min-height:0;position:relative}
+.bar.in {background:var(--green)}
+.bar.out {background:var(--blue)}
+.bar span {position:absolute;top:-20px;left:0;right:0;font-size:11px;font-weight:bold}
+.chart-label {font-size:11px;color:var(--muted);margin-top:10px}
+.loader-grid {display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.loader-card {background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:20px}
+.loader-avatar {width:46px;height:46px;border-radius:50%;background:#dbeafe;color:var(--navy);display:grid;place-items:center;font-weight:bold;font-size:20px;margin-bottom:12px}
+.empty {text-align:center;padding:30px;color:var(--muted)}
+footer {margin-top:25px;text-align:center;font-size:12px;color:#94a3b8}
+@media(max-width:1050px) {
+ .grid {grid-template-columns:repeat(2,1fr)}
+ .filters {grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:760px) {
+ .layout {flex-direction:column}
+ .sidebar {width:100%;padding:15px}
+ .brand-sub {margin-bottom:15px}
+ .nav {flex-direction:row;overflow-x:auto}
+ .nav button {white-space:nowrap}
+ .content {padding:16px}
+ .header {align-items:flex-start;flex-direction:column}
+ .loader-grid {grid-template-columns:1fr}
+ .form-grid {grid-template-columns:1fr}
+ .form-actions {grid-column:auto}
+}
+@media(max-width:480px) {
+ .grid,.filters {grid-template-columns:1fr}
+ .kpi .value {font-size:26px}
+}
+@media print {
+ .sidebar,.header button,.demo,.filters,.no-print,footer {display:none!important}
+ .content {padding:0}
+ .card {box-shadow:none}
+ table {min-width:0;font-size:10px}
+}
+</style>
+</head>
+<body>
+
+<div id="login" class="login-screen">
+ <div class="login-box">
+  <div class="brand">LOADEROPS</div>
+  <p>Warehouse Operational Dashboard</p>
+  <div class="demo">DEMO MODE — Data simulasi, tanpa database online.</div>
+  <label>Username</label>
+  <select id="username">
+   <option value="admin">admin — Administrator</option>
+   <option value="spv">spv — Supervisor</option>
+   <option value="mijan">mijan — Loader</option>
+   <option value="ompong">ompong — Loader</option>
+   <option value="safar">safar — Loader</option>
+  </select>
+  <label>Password</label>
+  <input type="password" id="password" placeholder="Masukkan password">
+  <button onclick="login()">Masuk</button>
+  <p class="small" style="text-align:center;margin-top:20px">Password demo: <b>demo123</b></p>
+  <p class="small" style="text-align:center">By Rosma</p>
+ </div>
+</div>
+
+<div id="app" class="layout hidden">
+ <aside class="sidebar">
+  <div class="brand">LOADEROPS</div>
+  <div class="brand-sub" id="roleLabel">Warehouse Dashboard</div>
+  <nav class="nav" id="navigation"></nav>
+ </aside>
+ <div class="content">
+  <div class="header">
+   <div>
+    <div class="muted">WAREHOUSE OPERATIONS</div>
+    <h1 id="pageTitle">Dashboard</h1>
+    <p id="pageDescription">Monitoring aktivitas operasional</p>
+   </div>
+   <div class="row">
+    <span class="badge" id="accountBadge"></span>
+    <button class="light" onclick="logout()">Logout</button>
+   </div>
+  </div>
+  <div class="demo">SIMULASI PRESENTASI — Data tidak terhubung ke sistem operasional warehouse.</div>
+  <div id="page"></div>
+  <footer>LoaderOPS © 2026 | Warehouse Operational Dashboard | By Rosma</footer>
+ </div>
+</div>
+
+<script>
+"use strict";
+
+const USERS = {
+ admin:{name:"Administrator",role:"admin"},
+ spv:{name:"Supervisor",role:"spv"},
+ mijan:{name:"Mijan",role:"loader"},
+ ompong:{name:"Ompong",role:"loader"},
+ safar:{name:"Safar",role:"loader"}
+};
+
+const STORAGE_KEY = "loaderops_dummy_v3";
+const SESSION_KEY = "loaderops_demo_session";
+const $ = id => document.getElementById(id);
+const number = value => Number(value || 0).toLocaleString("id-ID");
+const today = () => {
+ const d = new Date();
+ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+};
+const dateOffset = days => {
+ const d = new Date();
+ d.setDate(d.getDate()+days);
+ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+};
+const formatDate = date => date ? date.split("-").reverse().join("/") : "-";
+const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+})[c]);
+const uid = () => crypto.randomUUID ? crypto.randomUUID() : Date.now()+"-"+Math.random();
+const clean = value => String(value).trim().toUpperCase().replace(/\s+/g," ");
+
+function seedData() {
+ const records=[];
+ const loaders=["mijan","ompong","safar"];
+ for(let i=0;i<45;i++) {
+  const type=i%2===0?"Inbound":"Outbound";
+  const status=i%7===0?"Tidak Sesuai":i%4===0?"Belum Dicocokkan":"Sesuai";
+  records.push({
+   id:"DEMO-"+(i+1),
+   type,
+   date:dateOffset(-(i%24)),
+   reference:type==="Inbound"?"B "+(9100+i)+" XYZ":"BSIU"+(8021000+i),
+   carton:120+(i*37)%680,
+   loader:loaders[i%3],
+   status,
+   note:status==="Tidak Sesuai"?"Selisih carton — perlu pemeriksaan":"",
+   createdAt:new Date().toISOString()
+  });
+ }
+ return {records,audit:[]};
+}
+
+function loadData() {
+ try {
+  const saved=JSON.parse(localStorage.getItem(STORAGE_KEY));
+  if(saved && Array.isArray(saved.records) && Array.isArray(saved.audit)) return saved;
+ } catch(e) {}
+ return seedData();
+}
+
+let db=loadData();
+let currentUser=sessionStorage.getItem(SESSION_KEY)||"";
+let currentPage="dashboard";
+let editingId=null;
+let dashboardLoader="all";
+let reportStart=dateOffset(-30);
+let reportEnd=today();
+let reportLoader="all";
+let reportType="all";
+let searchTerm="";
+
+function save() {
+ try {localStorage.setItem(STORAGE_KEY,JSON.stringify(db));}
+ catch(e) {alert("Penyimpanan browser tidak tersedia.");}
+}
+
+function login() {
+ const username=$("username").value;
+ const password=$("password").value;
+ if(password!=="demo123") return alert("Password demo salah.");
+ currentUser=username;
+ sessionStorage.setItem(SESSION_KEY,currentUser);
+ currentPage="dashboard";
+ showApp();
+}
+
+function logout() {
+ currentUser="";
+ sessionStorage.removeItem(SESSION_KEY);
+ $("app").classList.add("hidden");
+ $("login").classList.remove("hidden");
+ $("password").value="";
+}
+
+function isLoader() {return USERS[currentUser]?.role==="loader";}
+function canManage() {return ["admin","spv"].includes(USERS[currentUser]?.role);}
+function loaderName(id) {return USERS[id]?.name||id;}
+function visibleRecords() {
+ return isLoader()?db.records.filter(r=>r.loader===currentUser):db.records;
+}
+function sorted(rows) {
+ return [...rows].sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt.localeCompare(a.createdAt));
+}
+function addAudit(action,record,old=null) {
+ db.audit.unshift({
+  id:uid(),
+  time:new Date().toISOString(),
+  user:currentUser,
+  action,
+  type:record.type,
+  reference:record.reference,
+  detail:action==="EDIT"
+   ?`Carton: ${old.carton} → ${record.carton}; Status: ${old.status} → ${record.status}`
+   :`${number(record.carton)} carton`,
+ });
+ db.audit=db.audit.slice(0,300);
+}
+function statusBadge(status) {
+ const cls=status==="Sesuai"?"ok":status==="Tidak Sesuai"?"bad":"wait";
+ return `<span class="badge ${cls}">${escapeHTML(status)}</span>`;
+}
+function kpi(label,value,subtitle="") {
+ return `<div class="kpi"><div class="label">${label}</div><div class="value">${number(value)}</div><div class="muted">${subtitle}</div></div>`;
+}
+function showApp() {
+ if(!USERS[currentUser]) return logout();
+ $("login").classList.add("hidden");
+ $("app").classList.remove("hidden");
+ $("roleLabel").textContent=USERS[currentUser].role.toUpperCase()+" Panel";
+ $("accountBadge").textContent=USERS[currentUser].name;
+ renderNavigation();
+ navigate(currentPage);
+}
+function renderNavigation() {
+ const menus=[
+  ["dashboard","▦ Dashboard"],
+  ["all","☷ Semua Aktivitas"],
+  ["inbound","↓ Aktivitas Inbound"],
+  ["outbound","↑ Aktivitas Outbound"]
+ ];
+ if(canManage()) menus.push(
+  ["loader","♙ Data Loader"],
+  ["reports","▤ Rekap & Laporan"],
+  ["audit","◷ Audit Log"]
+ );
+ $("navigation").innerHTML=menus.map(([id,label])=>
+  `<button class="${currentPage===id?"active":""}" onclick="navigate('${id}')">${label}</button>`
+ ).join("");
+}
+function navigate(page) {
+ currentPage=page;
+ editingId=null;
+ searchTerm="";
+ const titles={
+  dashboard:"Dashboard",
+  all:"Semua Aktivitas",
+  inbound:"Aktivitas Inbound",
+  outbound:"Aktivitas Outbound",
+  loader:"Data Loader",
+  reports:"Rekap & Laporan",
+  audit:"Audit Log"
+ };
+ $("pageTitle").textContent=titles[page]||"Dashboard";
+ $("pageDescription").textContent=page==="dashboard"
+  ?`Selamat datang, ${USERS[currentUser].name}`
+  :"Kelola dan pantau aktivitas operasional warehouse";
+ renderNavigation();
+ renderPage();
+}
+function renderPage() {
+ if(currentPage==="dashboard") renderDashboard();
+ else if(currentPage==="loader") renderLoaders();
+ else if(currentPage==="reports") renderReports();
+ else if(currentPage==="audit") renderAudit();
+ else renderActivities();
+}
+
+function loaderSelect(value="all",allLabel="Semua Loader") {
+ return `<option value="all" ${value==="all"?"selected":""}>${allLabel}</option>`+
+ ["mijan","ompong","safar"].map(id=>
+ `<option value="${id}" ${value===id?"selected":""}>${loaderName(id)}</option>`
+ ).join("");
+}
+
+function renderDashboard() {
+ let rows=visibleRecords();
+ if(!isLoader()&&dashboardLoader!=="all") rows=rows.filter(r=>r.loader===dashboardLoader);
+ const todays=rows.filter(r=>r.date===today());
+ const inbound=todays.filter(r=>r.type==="Inbound").reduce((s,r)=>s+r.carton,0);
+ const outbound=todays.filter(r=>r.type==="Outbound").reduce((s,r)=>s+r.carton,0);
+ const month=today().slice(0,7);
+ const monthly=rows.filter(r=>r.date.startsWith(month));
+ let html="";
+ if(canManage()) html+=`<div class="card"><label>Filter Aktivitas Loader</label>
+ <select onchange="dashboardLoader=this.value;renderDashboard()">${loaderSelect(dashboardLoader)}</select></div>`;
+ html+=`<div class="grid" style="margin-bottom:20px">
+ ${kpi("Total Aktivitas Hari Ini",todays.length,"Inbound + Outbound")}
+ ${kpi("Carton Inbound Hari Ini",inbound,"Total penerimaan")}
+ ${kpi("Carton Outbound Hari Ini",outbound,"Total pengiriman")}
+ ${kpi("Aktivitas Bulan Ini",monthly.length,"Jumlah transaksi")}
+ </div>`;
+ const weeks=[1,2,3,4,5].map(w=>{
+  const inWeek=r=>Math.ceil(Number(r.date.slice(8))/7)===w;
+  return {
+   week:w,
+   inbound:monthly.filter(r=>r.type==="Inbound"&&inWeek(r)).length,
+   outbound:monthly.filter(r=>r.type==="Outbound"&&inWeek(r)).length
+  };
+ });
+ const max=Math.max(1,...weeks.flatMap(w=>[w.inbound,w.outbound]));
+ html+=`<div class="card">
+ <div class="row between"><div><h2>Grafik Aktivitas Bulanan</h2>
+ <p>Jumlah aktivitas per minggu pada bulan berjalan</p></div>
+ <div class="small"><span style="color:var(--green)">● Inbound</span> &nbsp;
+ <span style="color:var(--blue)">● Outbound</span></div></div>
+ <div class="table-wrap"><div class="chart" style="min-width:500px">
+ ${weeks.map(w=>`<div class="chart-group"><div class="bars">
+ <div class="bar in" style="height:${w.inbound/max*100}%"><span>${w.inbound||""}</span></div>
+ <div class="bar out" style="height:${w.outbound/max*100}%"><span>${w.outbound||""}</span></div>
+ </div><div class="chart-label">Minggu ${w.week}</div></div>`).join("")}
+ </div></div></div>`;
+ html+=`<div class="card"><div class="row between">
+ <div><h2>Aktivitas Terbaru</h2><p>${rows.length} aktivitas tercatat</p></div>
+ <button onclick="navigate('all')">Lihat Semua Aktivitas</button></div>
+ ${activityTable(sorted(rows).slice(0,8),false)}</div>`;
+ $("page").innerHTML=html;
+}
+
+function activityTable(rows,actions=true) {
+ if(!rows.length) return `<div class="empty">Tidak ada aktivitas yang ditampilkan.</div>`;
+ return `<div class="table-wrap"><table><thead><tr>
+ <th>Tanggal</th><th>Jenis</th><th>Loader</th><th>No. Mobil / Container</th>
+ <th>Total Carton</th><th>Status</th><th>Keterangan</th>${actions?"<th>Aksi</th>":""}
+ </tr></thead><tbody>${rows.map(r=>`<tr>
+ <td>${formatDate(r.date)}</td>
+ <td>${r.type}</td>
+ <td>${loaderName(r.loader)}</td>
+ <td>${escapeHTML(r.reference)}</td>
+ <td>${number(r.carton)}</td>
+ <td>${statusBadge(r.status)}</td>
+ <td>${escapeHTML(r.note||"-")}</td>
+ ${actions?`<td>${actionButtons(r)}</td>`:""}
+ </tr>`).join("")}</tbody></table></div>`;
+}
+
+function actionButtons(r) {
+ const editable=isLoader()&&r.loader===currentUser&&r.status==="Belum Dicocokkan";
+ if(!editable) return `<span class="muted">Terkunci</span>`;
+ return `<button class="light" onclick="editRecord('${r.id}')">Edit</button>
+ <button class="danger" onclick="deleteRecord('${r.id}')">Hapus</button>`;
+}
+
+function renderActivities() {
+ let rows=visibleRecords();
+ if(currentPage==="inbound") rows=rows.filter(r=>r.type==="Inbound");
+ if(currentPage==="outbound") rows=rows.filter(r=>r.type==="Outbound");
+ if(searchTerm) {
+  const q=searchTerm.toLowerCase();
+  rows=rows.filter(r=>[r.reference,r.loader,r.status,r.note,r.type]
+   .some(v=>String(v||"").toLowerCase().includes(q)));
+ }
+ const type=currentPage==="inbound"?"Inbound":"Outbound";
+ $("page").innerHTML=`
+ <div class="card">
+ <div class="row between">
+ <div><h2>${currentPage==="all"?"Semua Aktivitas":`Daftar Aktivitas ${type}`}</h2>
+ <p>Monitoring data operasional dan rekonsiliasi carton</p></div>
+ ${isLoader()&&currentPage!=="all"
+ ?`<button class="green" onclick="openForm('${type}')">+ Tambah ${type}</button>`:""}
+ </div>
+ <div class="row no-print" style="margin-bottom:18px">
+ <input id="searchInput" style="max-width:330px" placeholder="Cari nomor kendaraan, loader, status..." value="${escapeHTML(searchTerm)}">
+ <button class="light" onclick="searchTerm=$('searchInput').value;renderActivities()">Cari</button>
+ <button class="light" onclick="searchTerm='';renderActivities()">Reset</button>
+ </div>
+ <div id="entryForm"></div>
+ ${activityTable(sorted(rows))}
+ </div>`;
+}
+
+function openForm(type,id=null) {
+ if(!isLoader()) return alert("Hanya Loader yang dapat menginput data.");
+ editingId=id;
+ const r=id?db.records.find(x=>x.id===id):null;
+ if(r&&!(r.loader===currentUser&&r.status==="Belum Dicocokkan"))
+  return alert("Data ini tidak dapat diedit.");
+ $("entryForm").innerHTML=`
+ <div class="card" style="background:#f8fafc">
+ <h2>${id?"Edit":"Tambah"} Aktivitas ${type}</h2>
+ <form onsubmit="saveRecord(event,'${type}')">
+ <div class="form-grid">
+ <div><label>Tanggal Aktivitas</label>
+ <input id="formDate" type="date" required value="${r?.date||today()}"></div>
+ <div><label>${type==="Inbound"?"Nomor Mobil":"Nomor Container"}</label>
+ <input id="formReference" required maxlength="40" value="${escapeHTML(r?.reference||"")}" placeholder="${type==="Inbound"?"B 9123 XYZ":"BSIU8021455"}"></div>
+ <div><label>Total Carton</label>
+ <input id="formCarton" type="number" min="1" required value="${r?.carton||""}"></div>
+ <div><label>Loader</label>
+ <input value="${loaderName(currentUser)}" disabled></div>
+ <div class="form-actions">
+ <button type="button" class="light" onclick="$('entryForm').innerHTML=''">Batal</button>
+ <button type="submit">Simpan Data</button>
+ </div></div></form></div>`;
+ $("entryForm").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+function saveRecord(event,type) {
+ event.preventDefault();
+ const date=$("formDate").value;
+ const reference=clean($("formReference").value);
+ const carton=Number($("formCarton").value);
+ if(!date||!reference||!Number.isInteger(carton)||carton<1)
+  return alert("Lengkapi data dengan benar.");
+ if(editingId) {
+  const r=db.records.find(x=>x.id===editingId);
+  if(!r||r.loader!==currentUser||r.status!=="Belum Dicocokkan")
+   return alert("Data tidak dapat diubah.");
+  const old={...r};
+  Object.assign(r,{date,reference,carton});
+  addAudit("EDIT",r,old);
+ } else {
+  const r={
+   id:uid(),type,date,reference,carton,loader:currentUser,
+   status:"Belum Dicocokkan",note:"",createdAt:new Date().toISOString()
+  };
+  db.records.unshift(r);
+  addAudit("TAMBAH",r);
+ }
+ save();
+ editingId=null;
+ alert("Data berhasil disimpan.");
+ renderPage();
+}
+
+function editRecord(id) {
+ const r=db.records.find(x=>x.id===id);
+ if(r) openForm(r.type,id);
+}
+
+function deleteRecord(id) {
+ const index=db.records.findIndex(r=>r.id===id);
+ if(index<0) return;
+ const r=db.records[index];
+ if(!isLoader()||r.loader!==currentUser||r.status!=="Belum Dicocokkan")
+  return alert("Data ini tidak dapat dihapus.");
+ if(!confirm("Hapus aktivitas ini?")) return;
+ addAudit("HAPUS",r);
+ db.records.splice(index,1);
+ save();
+ renderPage();
+}
+
+function renderLoaders() {
+ if(!canManage()) return navigate("dashboard");
+ const html=["mijan","ompong","safar"].map(id=>{
+  const rows=db.records.filter(r=>r.loader===id);
+  const inbound=rows.filter(r=>r.type==="Inbound");
+  const outbound=rows.filter(r=>r.type==="Outbound");
+  return `<div class="loader-card">
+  <div class="loader-avatar">${loaderName(id)[0]}</div>
+  <h2>${loaderName(id)}</h2>
+  <p>Warehouse Loader</p>
+  <p>Total Aktivitas: <b>${number(rows.length)}</b></p>
+  <p>Inbound: <b>${number(inbound.length)}</b> aktivitas</p>
+  <p>Outbound: <b>${number(outbound.length)}</b> aktivitas</p>
+  <p>Total Carton: <b>${number(rows.reduce((s,r)=>s+r.carton,0))}</b></p>
+  </div>`;
+ }).join("");
+ $("page").innerHTML=`<div class="card">
+ <h2>Data Loader Warehouse</h2>
+ <p>Ringkasan produktivitas berdasarkan aktivitas yang tercatat.</p>
+ <div class="loader-grid">${html}</div></div>
+ <div class="card"><h2>Rekonsiliasi Aktivitas</h2>
+ <p>Admin dan SPV dapat mencocokkan status aktivitas melalui tabel berikut.</p>
+ ${reconciliationTable()}</div>`;
+}
+
+function reconciliationTable() {
+ const rows=sorted(db.records).slice(0,100);
+ return `<div class="table-wrap"><table><thead><tr>
+ <th>Tanggal</th><th>Jenis</th><th>Loader</th><th>Referensi</th>
+ <th>Carton</th><th>Status</th><th>Rekonsiliasi</th>
+ </tr></thead><tbody>${rows.map(r=>`<tr>
+ <td>${formatDate(r.date)}</td><td>${r.type}</td>
+ <td>${loaderName(r.loader)}</td><td>${escapeHTML(r.reference)}</td>
+ <td>${number(r.carton)}</td><td>${statusBadge(r.status)}</td>
+ <td><button class="light" onclick="reconcile('${r.id}')">Periksa</button></td>
+ </tr>`).join("")}</tbody></table></div>`;
+}
+
+function reconcile(id) {
+ if(!canManage()) return;
+ const r=db.records.find(x=>x.id===id);
+ if(!r) return;
+ const choice=prompt(
+  "Pilih status rekonsiliasi:\n1 = Sesuai\n2 = Tidak Sesuai\n3 = Belum Dicocokkan",
+  r.status==="Sesuai"?"1":r.status==="Tidak Sesuai"?"2":"3"
+ );
+ if(choice===null) return;
+ const statuses={"1":"Sesuai","2":"Tidak Sesuai","3":"Belum Dicocokkan"};
+ if(!statuses[choice]) return alert("Pilihan tidak valid.");
+ const note=prompt("Keterangan rekonsiliasi:",r.note||"");
+ if(note===null) return;
+ const old={...r};
+ r.status=statuses[choice];
+ r.note=note.trim();
+ addAudit("EDIT",r,old);
+ save();
+ renderPage();
+}
+
+function filteredReports() {
+ return sorted(db.records.filter(r=>
+  (!reportStart||r.date>=reportStart)&&
+  (!reportEnd||r.date<=reportEnd)&&
+  (reportLoader==="all"||r.loader===reportLoader)&&
+  (reportType==="all"||r.type===reportType)
+ ));
+}
+function updateReportFilters() {
+ reportStart=$("reportStart").value;
+ reportEnd=$("reportEnd").value;
+ reportLoader=$("reportLoader").value;
+ reportType=$("reportType").value;
+ if(reportStart&&reportEnd&&reportStart>reportEnd)
+  return alert("Tanggal mulai tidak boleh setelah tanggal akhir.");
+ renderReports();
+}
+function renderReports() {
+ if(!canManage()) return navigate("dashboard");
+ const rows=filteredReports();
+ const inbound=rows.filter(r=>r.type==="Inbound");
+ const outbound=rows.filter(r=>r.type==="Outbound");
+ $("page").innerHTML=`
+ <div class="card">
+ <div class="row between">
+ <div><h2>Rekap & Laporan LoaderOPS</h2>
+ <p>Filter aktivitas berdasarkan periode, loader, dan jenis aktivitas.</p></div>
+ <div class="row no-print">
+ <button class="green" onclick="exportCSV()">Ekspor Excel (CSV)</button>
+ <button class="primary" onclick="window.print()">Cetak / Simpan PDF</button>
+ </div></div>
+ <div class="filters">
+ <div><label>Tanggal Mulai</label><input id="reportStart" type="date" value="${reportStart}"></div>
+ <div><label>Tanggal Akhir</label><input id="reportEnd" type="date" value="${reportEnd}"></div>
+ <div><label>Loader</label><select id="reportLoader">${loaderSelect(reportLoader)}</select></div>
+ <div><label>Jenis Aktivitas</label><select id="reportType">
+ <option value="all" ${reportType==="all"?"selected":""}>Semua</option>
+ <option value="Inbound" ${reportType==="Inbound"?"selected":""}>Inbound</option>
+ <option value="Outbound" ${reportType==="Outbound"?"selected":""}>Outbound</option>
+ </select></div>
+ </div>
+ <button class="no-print" onclick="updateReportFilters()">Terapkan Filter</button>
+ </div>
+ <div class="grid" style="margin-bottom:20px">
+ ${kpi("Total Aktivitas",rows.length)}
+ ${kpi("Aktivitas Inbound",inbound.length)}
+ ${kpi("Carton Inbound",inbound.reduce((s,r)=>s+r.carton,0))}
+ ${kpi("Carton Outbound",outbound.reduce((s,r)=>s+r.carton,0))}
+ </div>
+ <div class="card"><h2>Detail Laporan</h2>
+ <p>Periode ${formatDate(reportStart)} sampai ${formatDate(reportEnd)}</p>
+ ${activityTable(rows,false)}</div>`;
+}
+
+function exportCSV() {
+ const rows=filteredReports();
+ if(!rows.length) return alert("Tidak ada data untuk diekspor.");
+ const columns=["Tanggal","Jenis","Loader","Referensi","Total Carton","Status","Keterangan"];
+ const data=rows.map(r=>[
+  formatDate(r.date),r.type,loaderName(r.loader),r.reference,
+  r.carton,r.status,r.note||""
+ ]);
+ const csv=[columns,...data].map(row=>row.map(value=>
+  '"'+String(value).replace(/"/g,'""')+'"'
+ ).join(",")).join("\r\n");
+ const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;
+ a.download=`LoaderOPS_Rekap_${reportStart}_${reportEnd}.csv`;
+ document.body.appendChild(a);
+ a.click();
+ a.remove();
+ URL.revokeObjectURL(url);
+}
+
+function renderAudit() {
+ if(!canManage()) return navigate("dashboard");
+ $("page").innerHTML=`<div class="card">
+ <div class="row between"><div><h2>Audit Log</h2>
+ <p>Riwayat perubahan aktivitas dalam browser demo ini.</p></div>
+ <span class="badge">${db.audit.length} Riwayat</span></div>
+ <div class="table-wrap"><table><thead><tr>
+ <th>Waktu</th><th>User</th><th>Aksi</th><th>Jenis</th>
+ <th>Referensi</th><th>Detail</th></tr></thead><tbody>
+ ${db.audit.length?db.audit.map(a=>`<tr>
+ <td>${new Date(a.time).toLocaleString("id-ID")}</td>
+ <td>${loaderName(a.user)}</td>
+ <td>${escapeHTML(a.action)}</td>
+ <td>${escapeHTML(a.type)}</td>
+ <td>${escapeHTML(a.reference)}</td>
+ <td>${escapeHTML(a.detail)}</td>
+ </tr>`).join(""):`<tr><td colspan="6" class="empty">Belum ada riwayat perubahan.</td></tr>`}
+ </tbody></table></div></div>`;
+}
+
+if(USERS[currentUser]) showApp();
+else sessionStorage.removeItem(SESSION_KEY);
+</script>
+</body>
+</html>
