@@ -1138,11 +1138,15 @@ async function saveActivity(event) {
   try {
     if(editing) {
       const original=editing;
-      const result=await sb.from(table)
-        .update(payload)
-        .eq("id",original.id)
-        .eq("loader_id",authUser.id)
-        .select();
+      let query=sb.from(table)
+  .update(payload)
+  .eq("id",original.id);
+
+if(isLoader()) {
+  query=query.eq("loader_id",authUser.id);
+}
+
+const result=await query.select();
 
       if(result.error)throw result.error;
       if(!result.data?.length) {
