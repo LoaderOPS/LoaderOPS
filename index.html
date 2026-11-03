@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -242,7 +242,6 @@ hr {
 
 <body>
 
-<!-- LOGIN -->
 <section id="loginPage" class="login">
   <div class="loginbox">
     <h1>📦 LOADEROPS</h1>
@@ -273,7 +272,6 @@ hr {
   </div>
 </section>
 
-<!-- APPLICATION -->
 <section id="appPage" class="hidden">
   <header>
     <div>
@@ -386,9 +384,6 @@ function normalizeType(v) {
   return "";
 }
 
-// Nilai di excel_reference_rows dibatasi CHECK constraint Supabase
-// menjadi "Inbound" atau "Outbound". Internal aplikasi tetap memakai
-// INBOUND / OUTBOUND agar perbandingan dan filter konsisten.
 function databaseActivityType(v) {
   const type=normalizeType(v);
   if(type==="INBOUND")return "Inbound";
@@ -426,9 +421,7 @@ function isManager() {
 function loaderName(id) {
   const p=profiles.find(x=>x.id===id);
   return p?.full_name||p?.username||"Loader";
-}
-
-function allowedPages() {
+}function allowedPages() {
   if(isAdmin())
     return ["dashboard","master","activities","reports","audit"];
 
@@ -533,8 +526,6 @@ async function initializeApp() {
   }
 }
 
-// Hindari menjalankan query Supabase di dalam callback auth state,
-// karena callback tersebut berjalan di dalam siklus internal auth client.
 sb.auth.onAuthStateChange((event)=>{
   if(event==="SIGNED_OUT") {
     if(realtimeChannel) {
@@ -603,8 +594,6 @@ async function refreshData() {
 ================================================ */
 
 function scheduleRealtimeRefresh() {
-  // Satu perubahan bisa memicu beberapa event tabel. Gabungkan refresh
-  // agar tidak membanjiri query dan tetap memperbarui semua perangkat.
   if(realtimeRefreshTimer)clearTimeout(realtimeRefreshTimer);
   realtimeRefreshTimer=setTimeout(()=>{
     realtimeRefreshTimer=null;
@@ -618,7 +607,6 @@ function setupRealtime() {
     realtimeChannel=null;
   }
 
-  // Nama channel unik per sesi pengguna.
   realtimeChannel=sb.channel("loaderops-live-"+authUser.id);
 
   [
@@ -916,338 +904,7 @@ function applyDash() {
     return;
   }
   renderDashboard();
-}
-
-/* ================================================
-   10. ACTIVITY TABLE
-================================================ */
-
-function activityTable(rows) {
-  if(!rows.length)
-    return '<p class="muted">Belum ada aktivitas.</p>';
-
-  return `
-    <div class="tablewrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Tanggal</th>
-            <th>Loader</th>
-            <th>Jenis</th>
-            <th>No Mobil/Container</th>
-            <th>Qty Loader</th>
-            <th>Qty Master</th>
-            <th>Selisih</th>
-            <th>Status</th>
-            ${currentPage==="activities"?"<th>Aksi</th>":""}
-          </tr>
-        </thead>
-        <tbody>
-          ${rows.map(a=>{
-            const v=validateActivity(a.type,a);
-            const own=a.loader_id===authUser.id;
-            const canEdit=isAdmin()||(
-              isLoader()&&own&&
-              a.reconciliation_status==="Belum Dicocokkan"
-            );
-
-            const canDelete=isAdmin()||(
-              isLoader()&&own&&
-              a.reconciliation_status==="Belum Dicocokkan"
-            );
-
-            return `
-              <tr>
-                <td>${dateFmt(a.activity_date)}</td>
-                <td>${esc(loaderName(a.loader_id))}</td>
-                <td>${a.type}</td>
-                <td>${esc(a.number)}</td>
-                <td>${fmt(a.total_carton)}</td>
-                <td>${v.qty===null?"-":fmt(v.qty)}</td>
-                <td>${v.difference===null?"-":fmt(v.difference)}</td>
-                <td>${tag(v.status)}</td>
-                ${currentPage==="activities"?`
-                  <td>
-                    <div class="actions">
-                      ${canEdit?`<button class="btn light" onclick="editActivity('${a.id}','${a.type}')">Edit</button>`:""}
-                      ${canDelete?`<button class="btn red" onclick="deleteActivity('${a.id}','${a.type}')">Hapus</button>`:""}
-                    </div>
-                  </td>
-                `:""}
-              </tr>
-            `;
-          }).join("")}
-        </tbody>
-      </table>
-    </div>
-  `;
-}
-
-/* ================================================
-   11. ACTIVITY INPUT / EDIT
-================================================ */
-
-function renderActivities() {
-  const rows=visibleActivities();
-
-  document.getElementById("content").innerHTML=`
-    <section class="panel">
-      <h3>${editing?"Edit Aktivitas Loader":"Input Aktivitas Loader"}</h3>
-
-      <div class="notice">
-        Setiap Loader dapat mengerjakan banyak inbound dan outbound
-        dengan nomor mobil atau container berbeda.
-        Setiap transaksi disimpan terpisah.
-      </div>
-
-      <form onsubmit="saveActivity(event)">
-        <div class="formgrid">
-          <div class="field">
-            <label>Tanggal</label>
-            <input type="date" id="actDate" required
-              value="${editing?.date||today()}">
-          </div>
-
-          <div class="field">
-            <label>Jenis Aktivitas</label>
-            <select id="actType" onchange="updateNumberLabel()">
-              <option value="INBOUND" ${editing?.type==="INBOUND"?"selected":""}>INBOUND</option>
-              <option value="OUTBOUND" ${editing?.type==="OUTBOUND"?"selected":""}>OUTBOUND</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label id="numberLabel">Nomor Mobil</label>
-            <input id="actNumber" required
-              placeholder="Nomor mobil / container"
-              value="${esc(editing?.number||"")}">
-          </div>
-
-          <div class="field">
-            <label>Total Qty Carton</label>
-            <input id="actQty" type="number" min="0" step="1" required
-              value="${editing?.qty??""}">
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Keterangan (opsional)</label>
-          <input id="actNote" placeholder="Keterangan tambahan"
-            value="${esc(editing?.note||"")}">
-        </div>
-
-        <button class="btn green" type="submit">
-          ${editing?"Simpan Perubahan":"Simpan Aktivitas"}
-        </button>
-
-        ${editing?`
-          <button class="btn gray" type="button" onclick="cancelEdit()">
-            Batal Edit
-          </button>
-        `:""}
-      </form>
-    </section>
-
-    <section class="panel">
-      <div class="toolbar">
-        <h3>Riwayat Aktivitas</h3>
-        <button class="btn light" onclick="refreshData()">Refresh</button>
-      </div>
-
-      <div class="filters">
-        <div class="field">
-          <label>Jenis</label>
-          <select id="filterType" onchange="applyActivityFilter()">
-            <option value="all">Semua</option>
-            <option value="INBOUND" ${actFilter.type==="INBOUND"?"selected":""}>Inbound</option>
-            <option value="OUTBOUND" ${actFilter.type==="OUTBOUND"?"selected":""}>Outbound</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Dari Tanggal</label>
-          <input type="date" id="filterStart" value="${actFilter.start}"
-            onchange="applyActivityFilter()">
-        </div>
-        <div class="field">
-          <label>Sampai Tanggal</label>
-          <input type="date" id="filterEnd" value="${actFilter.end}"
-            onchange="applyActivityFilter()">
-        </div>
-      </div>
-
-      ${activityTable(rows)}
-    </section>
-  `;
-
-  updateNumberLabel();
-}
-
-function updateNumberLabel() {
-  const type=document.getElementById("actType")?.value;
-  const label=document.getElementById("numberLabel");
-  if(label)label.textContent=type==="INBOUND"
-    ?"Nomor Mobil":"Nomor Container";
-}
-
-function applyActivityFilter() {
-  actFilter.type=document.getElementById("filterType").value;
-  actFilter.start=document.getElementById("filterStart").value;
-  actFilter.end=document.getElementById("filterEnd").value;
-
-  renderActivities();
-}
-
-function cancelEdit() {
-  editing=null;
-  renderActivities();
-}
-
-function editActivity(id,type) {
-  if(type==="INBOUND") {
-    const a=inbound.find(x=>x.id===id);
-    if(!a)return;
-    if(isLoader()&&a.loader_id!==authUser.id)return;
-    editing={
-      id,type,
-      date:a.activity_date,
-      number:a.vehicle_number,
-      qty:a.total_carton,
-      note:a.reconciliation_note||""
-    };
-  } else {
-    const a=outbound.find(x=>x.id===id);
-    if(!a)return;
-    if(isLoader()&&a.loader_id!==authUser.id)return;
-    editing={
-      id,type,
-      date:a.activity_date,
-      number:a.container_number,
-      qty:a.total_carton,
-      note:a.reconciliation_note||""
-    };
-  }
-
-  renderActivities();
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-
-async function saveActivity(event) {
-  event.preventDefault();
-
-  const date=document.getElementById("actDate").value;
-  const type=document.getElementById("actType").value;
-  const number=document.getElementById("actNumber").value.trim().toUpperCase();
-  const qty=Number(document.getElementById("actQty").value);
-  const note=document.getElementById("actNote").value.trim();
-
-  if(!date||!number||!Number.isSafeInteger(qty)||qty<0) {
-    notify("Data aktivitas tidak valid.");
-    return;
-  }
-
-  const match=masterMatches(type,date,number);
-  const expected=match.reduce((s,m)=>s+Number(m.total_carton),0);
-  const difference=match.length?qty-expected:null;
-  const status=!match.length?"Belum Dicocokkan":
-    difference===0?"Sesuai":"Tidak Sesuai";
-
-  const common={
-    activity_date:date,
-    total_carton:qty,
-    reconciliation_status:status,
-    excel_activity_date:match[0]?.activity_date||null,
-    excel_total_carton:match.length?expected:null,
-    carton_difference:difference,
-    reconciliation_note:note||null,
-    reconciled_by:match.length?authUser.id:null,
-    reconciled_at:match.length?new Date().toISOString():null
-  };
-
-  let table,payload;
-
-  if(type==="INBOUND") {
-    table="inbound_activities";
-    payload={
-      ...common,
-      vehicle_number:number,
-      excel_vehicle_number:match[0]?.vehicle_number||null
-    };
-  } else {
-    table="outbound_activities";
-    payload={
-      ...common,
-      container_number:number,
-      excel_container_number:match[0]?.container_number||null,
-      excel_vehicle_number:match[0]?.vehicle_number||null
-    };
-  }
-
-  try {
-    if(editing) {
-      const original=editing;
-      let query=sb.from(table)
-  .update(payload)
-  .eq("id",original.id);
-
-if(isLoader()) {
-  query=query.eq("loader_id",authUser.id);
-}
-
-const result=await query.select();
-
-      if(result.error)throw result.error;
-      if(!result.data?.length) {
-        throw new Error("Tidak dapat mengedit data. Periksa hak akses atau status aktivitas.");
-      }
-    } else {
-      payload.loader_id=authUser.id;
-
-      const result=await sb.from(table)
-        .insert(payload)
-        .select();
-
-      if(result.error)throw result.error;
-    }
-
-    editing=null;
-    await loadAll();
-    notify("Aktivitas berhasil disimpan.");
-    renderActivities();
-
-  } catch(e) {
-    console.error(e);
-    notify("Gagal menyimpan: "+e.message);
-  }
-}
-
-async function deleteActivity(id,type) {
-  if(!confirm("Yakin ingin menghapus aktivitas ini?"))return;
-
-  try {
-    const table=type==="INBOUND"
-      ?"inbound_activities":"outbound_activities";
-
-    let query=sb.from(table).delete().eq("id",id);
-
-    if(isLoader())
-      query=query.eq("loader_id",authUser.id);
-
-    const {data,error}=await query.select();
-
-    if(error)throw error;
-    if(!data?.length)
-      throw new Error("Tidak dapat menghapus. Data mungkin sudah dikunci atau bukan milikmu.");
-
-    await loadAll();
-    notify("Aktivitas berhasil dihapus.");
-    renderActivities();
-
-  } catch(e) {
-    notify("Gagal menghapus: "+e.message);
-  }
-}
-
-/* ================================================
+}/* ================================================
    12. MASTER CSV UPLOAD
 ================================================ */
 
@@ -1376,7 +1033,6 @@ async function uploadMaster() {
       upload_id:upload.data.id
     }));
 
-    // Kirim bertahap untuk CSV berukuran besar.
     for(let i=0;i<batch.length;i+=500) {
       const part=batch.slice(i,i+500);
       const inserted=await sb.from("excel_reference_rows").insert(part);
@@ -1499,7 +1155,7 @@ function masterTable(rows) {
             <tr>
               <td>${dateFmt(m.activity_date)}</td>
               <td>${esc(activityType(m))}</td>
-              <td>${esc(m.activity_type==="INBOUND"?m.vehicle_number:(m.container_number||m.vehicle_number))}</td>
+              <td>${esc(m.activity_type==="Inbound"?m.vehicle_number:(m.container_number||m.vehicle_number))}</td>
               <td>${fmt(m.total_carton)}</td>
             </tr>
           `).join("")}
@@ -1516,9 +1172,7 @@ function downloadTemplate() {
     [["2026-11-02","INBOUND","B 9075 KXV",29],
      ["2026-11-02","OUTBOUND","HLCU1234567",100]]
   );
-}
-
-/* ================================================
+}/* ================================================
    14. REPORTS
 ================================================ */
 
@@ -1622,7 +1276,9 @@ function exportMaster() {
     master.map(m=>[
       m.activity_date,
       activityType(m),
-      m.activity_type==="INBOUND"?m.vehicle_number:(m.container_number||m.vehicle_number),
+      activityType(m)==="INBOUND"
+        ?m.vehicle_number
+        :(m.container_number||m.vehicle_number),
       m.total_carton
     ])
   );
@@ -1655,7 +1311,7 @@ function exportReport() {
 }
 
 /* ================================================
-   17. START
+   17. START APPLICATION
 ================================================ */
 
 async function startApp() {
