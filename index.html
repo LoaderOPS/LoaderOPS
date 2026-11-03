@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -284,6 +283,7 @@ hr {
     </div>
     <div>
       <span id="userLabel"></span>
+      <button class="btn light" onclick="refreshData()">Refresh</button>
       <button class="btn gray" onclick="logout()">Logout</button>
     </div>
   </header>
@@ -329,6 +329,8 @@ let profiles = [];
 
 let editing = null;
 let realtimeChannel = null;
+let realtimeRefreshTimer = null;
+let isInitializing = false;
 
 let dash = {
   start: today(),
@@ -382,6 +384,16 @@ function normalizeType(v) {
   if(["inbound","in","ib"].includes(x))return "INBOUND";
   if(["outbound","out","ob"].includes(x))return "OUTBOUND";
   return "";
+}
+
+// Nilai di excel_reference_rows dibatasi CHECK constraint Supabase
+// menjadi "Inbound" atau "Outbound". Internal aplikasi tetap memakai
+// INBOUND / OUTBOUND agar perbandingan dan filter konsisten.
+function databaseActivityType(v) {
+  const type=normalizeType(v);
+  if(type==="INBOUND")return "Inbound";
+  if(type==="OUTBOUND")return "Outbound";
+  return null;
 }
 
 function notify(message) {
@@ -462,6 +474,10 @@ async function login() {
 }
 
 async function logout() {
+  if(realtimeRefreshTimer) {
+    clearTimeout(realtimeRefreshTimer);
+    realtimeRefreshTimer=null;
+  }
   if(realtimeChannel) {
     await sb.removeChannel(realtimeChannel);
     realtimeChannel=null;
@@ -478,6 +494,10 @@ async function logout() {
 }
 
 async function initializeApp() {
+  if(isInitializing)return;
+  isInitializing=true;
+
+  try {
   const {data,error}=await sb
     .from("profiles")
     .select("*")
@@ -508,19 +528,24 @@ async function initializeApp() {
   }
 
   setupRealtime();
+  } finally {
+    isInitializing=false;
+  }
 }
 
-sb.auth.onAuthStateChange(async(event,session)=>{
-  if(event==="SIGNED_OUT")return;
-
-  if(session?.user&&!profile) {
-    authUser=session.user;
-    try {
-      await initializeApp();
-    } catch(e) {
-      console.error(e);
-      notify(e.message);
+// Hindari menjalankan query Supabase di dalam callback auth state,
+// karena callback tersebut berjalan di dalam siklus internal auth client.
+sb.auth.onAuthStateChange((event)=>{
+  if(event==="SIGNED_OUT") {
+    if(realtimeChannel) {
+      sb.removeChannel(realtimeChannel);
+      realtimeChannel=null;
     }
+    authUser=null;
+    profile=null;
+    document.getElementById("appPage").classList.add("hidden");
+    document.getElementById("loginPage").classList.remove("hidden");
+    document.getElementById("loginPass").value="";
   }
 });
 
@@ -577,27 +602,49 @@ async function refreshData() {
    6. REALTIME
 ================================================ */
 
-function setupRealtime() {
-  if(realtimeChannel)sb.removeChannel(realtimeChannel);
+function scheduleRealtimeRefresh() {
+  // Satu perubahan bisa memicu beberapa event tabel. Gabungkan refresh
+  // agar tidak membanjiri query dan tetap memperbarui semua perangkat.
+  if(realtimeRefreshTimer)clearTimeout(realtimeRefreshTimer);
+  realtimeRefreshTimer=setTimeout(()=>{
+    realtimeRefreshTimer=null;
+    refreshData();
+  },300);
+}
 
-  realtimeChannel=sb.channel("loaderops-live");
+function setupRealtime() {
+  if(realtimeChannel) {
+    sb.removeChannel(realtimeChannel);
+    realtimeChannel=null;
+  }
+
+  // Nama channel unik per sesi pengguna.
+  realtimeChannel=sb.channel("loaderops-live-"+authUser.id);
 
   [
     "inbound_activities",
     "outbound_activities",
     "excel_reference_rows",
-    "excel_uploads"
+    "excel_uploads",
+    "profiles",
+    "audit_logs"
   ].forEach(table=>{
     realtimeChannel.on(
       "postgres_changes",
       {event:"*",schema:"public",table},
-      ()=>refreshData()
+      scheduleRealtimeRefresh
     );
   });
 
   realtimeChannel.subscribe(status=>{
-    if(status==="SUBSCRIBED")
-      setSync("● Realtime connected");
+    if(status==="SUBSCRIBED") {
+      setSync("● Realtime connected — perubahan perangkat lain aktif");
+    } else if(status==="CHANNEL_ERROR"||status==="TIMED_OUT") {
+      setSync("Realtime terputus — gunakan tombol Refresh");
+      console.warn("Supabase Realtime status:",status);
+    } else if(status==="CLOSED") {
+      setSync("Realtime tidak aktif");
+    }
   });
 }
 
@@ -1270,11 +1317,10 @@ async function uploadMaster() {
     const grouped=new Map();
 
     rows.forEach((row,i)=>{
-      const values=Object.values(row);
-      const date=parseDate(values[di]);
-      const type=normalizeType(values[ti]);
-      const number=String(values[ni]||"").trim().toUpperCase();
-      const qty=Number(String(values[qi]??"").replace(/,/g,""));
+      const date=parseDate(row[headers[di]]);
+      const type=normalizeType(row[headers[ti]]);
+      const number=String(row[headers[ni]]||"").trim().toUpperCase();
+      const qty=Number(String(row[headers[qi]]??"").replace(/,/g,""));
 
       if(!date||!type||!number||!Number.isSafeInteger(qty)||qty<0)
         throw new Error("Data tidak valid pada baris "+(i+2));
@@ -1284,7 +1330,7 @@ async function uploadMaster() {
       if(!grouped.has(key)) {
         grouped.set(key,{
           activity_date:date,
-          activity_type:type,
+          activity_type:databaseActivityType(type),
           vehicle_number:number,
           container_number:type==="OUTBOUND"?number:null,
           total_carton:0
@@ -1330,13 +1376,17 @@ async function uploadMaster() {
       upload_id:upload.data.id
     }));
 
-    const inserted=await sb.from("excel_reference_rows").insert(batch);
+    // Kirim bertahap untuk CSV berukuran besar.
+    for(let i=0;i<batch.length;i+=500) {
+      const part=batch.slice(i,i+500);
+      const inserted=await sb.from("excel_reference_rows").insert(part);
 
-    if(inserted.error) {
-      await sb.from("excel_uploads")
-        .update({upload_status:"Gagal",upload_note:inserted.error.message})
-        .eq("id",upload.data.id);
-      throw inserted.error;
+      if(inserted.error) {
+        await sb.from("excel_uploads")
+          .update({upload_status:"Gagal",upload_note:inserted.error.message})
+          .eq("id",upload.data.id);
+        throw inserted.error;
+      }
     }
 
     await sb.from("excel_uploads")
