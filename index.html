@@ -4,948 +4,1122 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>LoaderOPS | Warehouse Dashboard</title>
+<title>LoaderOPS - Warehouse Dashboard</title>
 <style>
-:root{font-family:Arial,Helvetica,sans-serif;color:#243448;background:#f3f6fb}
+:root{font-family:Arial,sans-serif;color:#26384b;background:#f3f6fa}
 *{box-sizing:border-box}
 body{margin:0}
 button,input,select{font:inherit}
 button{cursor:pointer}
 .hidden{display:none!important}
-.login-wrap{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(135deg,#102c50,#2171ba)}
-.login-box{background:white;padding:34px;border-radius:18px;width:min(420px,100%);box-shadow:0 18px 50px #0003}
-.login-box h1{margin:0;color:#1261a6}
-.login-box p{color:#68778a}
-label{font-size:13px;font-weight:bold;display:block;margin-bottom:6px}
-input,select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px;background:white}
-.field{margin-bottom:15px}
-.btn{border:0;border-radius:8px;padding:10px 15px;background:#1769aa;color:white;font-weight:bold}
-.btn:hover{filter:brightness(.94)}
-.btn.gray{background:#64748b}
-.btn.red{background:#c33b44}
+.btn{border:0;border-radius:8px;padding:10px 14px;background:#1769aa;color:white;font-weight:bold}
 .btn.green{background:#16815e}
-.btn.light{background:#e7eef7;color:#244466}
+.btn.red{background:#c43d49}
+.btn.gray{background:#64748b}
+.btn.light{background:#e8eff7;color:#23466a}
 .btn:disabled{opacity:.5;cursor:not-allowed}
+input,select{width:100%;padding:10px;border:1px solid #ccd7e3;border-radius:8px;background:white}
+label{display:block;font-size:13px;font-weight:bold;margin-bottom:6px}
+.field{margin-bottom:13px}
+.login{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(135deg,#12345a,#2674b7)}
+.loginbox{background:white;width:min(420px,100%);padding:32px;border-radius:17px;box-shadow:0 15px 40px #0003}
+.loginbox h1{color:#1769aa;margin:0}
+.loginbox p{color:#718096}
 header{background:#12345a;color:white;padding:17px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 header h2{margin:0}
-header small{color:#d7e6f5}
-nav{background:white;display:flex;gap:7px;padding:12px 20px;flex-wrap:wrap;border-bottom:1px solid #dce5ef}
-nav button{background:#edf3fa;color:#31516f;border:0;border-radius:8px;padding:10px 13px;font-weight:bold}
+header small{color:#d5e4f3}
+nav{display:flex;gap:8px;padding:12px 20px;background:white;border-bottom:1px solid #e1e8ef;flex-wrap:wrap}
+nav button{border:0;background:#edf3f9;color:#31516e;border-radius:8px;padding:10px 14px;font-weight:bold}
 nav button.active{background:#1769aa;color:white}
-main{max-width:1350px;margin:auto;padding:22px}
+main{max-width:1400px;margin:auto;padding:22px}
 .panel{background:white;border:1px solid #e1e8f0;border-radius:13px;padding:20px;margin-bottom:18px;box-shadow:0 2px 10px #193c6008}
-.panel h3{margin:0 0 15px}
-.filters{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:12px;align-items:end}
-.cards{display:grid;grid-template-columns:repeat(4,minmax(170px,1fr));gap:13px;margin-bottom:18px}
+.panel h3{margin:0 0 15px;color:#173d67}
+.muted{font-size:13px;color:#718096;line-height:1.5}
+.notice{padding:12px;border-radius:8px;background:#eaf3fc;color:#315a81;font-size:13px;margin-bottom:15px}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:18px}
 .kpi{background:white;border:1px solid #e0e8f0;border-radius:12px;padding:17px}
-.kpi .name{font-size:13px;color:#68798b}
+.kpi .name{font-size:13px;color:#718096}
 .kpi .value{font-size:27px;font-weight:800;color:#173d67;margin-top:8px}
 .kpi .sub{font-size:12px;color:#8794a3;margin-top:5px}
-.table-wrap{overflow-x:auto}
+.filters,.formgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:end}
+.formgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.tablewrap{overflow-x:auto}
 table{border-collapse:collapse;width:100%;font-size:13px}
-th,td{text-align:left;border-bottom:1px solid #e8edf4;padding:11px;white-space:nowrap}
+th,td{text-align:left;padding:11px;border-bottom:1px solid #e7edf4;white-space:nowrap}
 th{background:#f0f5fa;color:#456079}
 tr:hover td{background:#fafcff}
 .tag{display:inline-block;padding:5px 9px;border-radius:30px;font-size:12px;font-weight:bold}
 .ok{background:#def6e8;color:#12643c}
 .bad{background:#ffe4e4;color:#a32935}
 .wait{background:#fff1cd;color:#8b6500}
-.muted{color:#708092;font-size:13px}
-.toolbar{display:flex;gap:9px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px}
-.form-grid{display:grid;grid-template-columns:repeat(3,minmax(170px,1fr));gap:12px}
-.form-actions{display:flex;gap:8px;margin-top:15px}
-.chart-row{display:grid;grid-template-columns:120px 1fr 75px;gap:12px;align-items:center;margin:11px 0}
-.track{height:13px;background:#edf1f7;border-radius:20px;overflow:hidden}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:15px}
+.chartrow{display:grid;grid-template-columns:110px 1fr 75px;gap:12px;align-items:center;margin:12px 0}
+.track{height:14px;background:#edf1f7;border-radius:20px;overflow:hidden}
 .bar{height:100%;border-radius:20px}
 .blue{background:#287bd1}
 .orange{background:#f5a23a}
-.legend{display:flex;gap:16px;margin-bottom:14px;font-size:13px}
+.legend{display:flex;gap:18px;font-size:13px;margin-bottom:18px}
 .dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
-hr{border:0;border-top:1px solid #e7edf4;margin:20px 0}
-.notice{background:#eaf3fc;color:#315a81;border-radius:9px;padding:12px;font-size:13px;margin-bottom:15px}
-.error{background:#ffe9e9;color:#a22d37}
-.success{background:#e3f8eb;color:#176440}
-@media(max-width:850px){.cards{grid-template-columns:repeat(2,1fr)}.filters,.form-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.cards,.filters,.form-grid{grid-template-columns:1fr}main{padding:12px}.chart-row{grid-template-columns:75px 1fr 65px}}
-@media print{header,nav,.toolbar,.filters,.no-print{display:none!important}main{padding:0}.panel,.kpi{box-shadow:none}}
+.actions{display:flex;gap:7px}
+.actions .btn{padding:7px 10px;font-size:12px}
+hr{border:0;border-top:1px solid #e7edf4;margin:18px 0}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}.filters,.formgrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){main{padding:12px}.cards,.filters,.formgrid{grid-template-columns:1fr}.chartrow{grid-template-columns:75px 1fr 65px}}
+@media print{header,nav,.no-print{display:none!important}main{padding:0}.panel,.kpi{box-shadow:none}}
 </style>
 </head>
 <body>
 
-<section id="loginPage" class="login-wrap">
-  <div class="login-box">
-    <h1>LoaderOPS</h1>
-    <p>Warehouse Operational Dashboard · Demo</p>
-    <div class="field">
-      <label>Username</label>
-      <select id="loginUser">
-        <option value="admin">Admin</option>
-        <option value="spv">Supervisor (SPV)</option>
-        <option value="mijan">Mijan</option>
-        <option value="ompong">Ompong</option>
-        <option value="safar">Safar</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Password</label>
-      <input type="password" id="loginPass" placeholder="Masukkan password">
-    </div>
-    <button class="btn" style="width:100%" onclick="login()">Login</button>
-    <p class="muted">Password demo: <b>demo123</b></p>
-    <p id="loginError" style="color:#b91c1c"></p>
-  </div>
+<section id="loginPage" class="login">
+<div class="loginbox">
+<h1>LOADEROPS</h1>
+<p>Warehouse Operational Dashboard</p>
+<div class="notice">DEMO VERSION — Data tersimpan pada browser ini.</div>
+<div class="field">
+<label>Username</label>
+<select id="loginUser">
+<option value="admin">Admin</option>
+<option value="spv">Supervisor</option>
+<option value="mijan">Mijan</option>
+<option value="ompong">Ompong</option>
+<option value="safar">Safar</option>
+</select>
+</div>
+<div class="field">
+<label>Password</label>
+<input id="loginPass" type="password" placeholder="Masukkan password">
+</div>
+<button class="btn" style="width:100%" onclick="login()">LOGIN</button>
+<p>Password demo: <b>demo123</b></p>
+<p id="loginError" style="color:#b91c1c"></p>
+</div>
 </section>
 
 <section id="appPage" class="hidden">
-  <header>
-    <div>
-      <h2>📦 LoaderOPS</h2>
-      <small>Warehouse Operational Monitoring System</small>
-    </div>
-    <div>
-      <span id="userLabel"></span>
-      <button class="btn gray" onclick="logout()" style="margin-left:12px">Logout</button>
-    </div>
-  </header>
-  <nav id="navigation"></nav>
-  <main id="content"></main>
+<header>
+<div>
+<h2>📦 LOADEROPS</h2>
+<small>Warehouse Operational Monitoring System</small>
+</div>
+<div>
+<span id="userLabel"></span>
+<button class="btn gray" onclick="logout()">Logout</button>
+</div>
+</header>
+<nav id="navigation"></nav>
+<main id="content"></main>
 </section>
 
 <script>
 "use strict";
 
-const STORAGE_KEY = "loaderops_master_dashboard_v1";
-const USERS = ["admin","spv","mijan","ompong","safar"];
-const LOADERS = ["mijan","ompong","safar"];
+/* ==================================
+   KONFIGURASI DAN PENYIMPANAN
+================================== */
 
-let currentUser = sessionStorage.getItem("loaderops_user") || "";
-let currentPage = "dashboard";
-let db = loadDatabase();
+const STORAGE_KEY="LOADEROPS_FINAL_DEMO_V2";
+const USERS=["admin","spv","mijan","ompong","safar"];
+const LOADERS=["mijan","ompong","safar"];
 
-let dashboardFilter = {
-  start: localDate(),
-  end: localDate(),
-  loader: "all"
+let currentUser=sessionStorage.getItem("loaderops_user")||"";
+let currentPage="dashboard";
+let db=loadDB();
+
+let dash={
+ start:today(),
+ end:today(),
+ loader:"all"
 };
 
-let activityFilter = {
-  type: "all",
-  start: "",
-  end: ""
+let actFilter={
+ type:"all",
+ start:"",
+ end:""
 };
 
-function localDate(date = new Date()){
-  const y = date.getFullYear();
-  const m = String(date.getMonth()+1).padStart(2,"0");
-  const d = String(date.getDate()).padStart(2,"0");
-  return `${y}-${m}-${d}`;
-}
+let editingId=null;
 
-function esc(value){
-  return String(value ?? "").replace(/[&<>"']/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",
-    '"':"&quot;","'":"&#39;"
-  }[c]));
-}
-
-function normalizeNumber(value){
-  return String(value ?? "").toUpperCase().replace(/[^A-Z0-9]/g,"");
-}
-
-function normalizeType(value){
-  const x = String(value ?? "").trim().toLowerCase();
-  if(["inbound","in","ib"].includes(x)) return "Inbound";
-  if(["outbound","out","ob"].includes(x)) return "Outbound";
-  return "";
-}
-
-function formatQty(value){
-  return Number(value || 0).toLocaleString("id-ID");
-}
-
-function formatDate(value){
-  if(!value) return "-";
-  const p = value.split("-");
-  return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : value;
+function today(){
+ const d=new Date();
+ return d.getFullYear()+"-"+
+ String(d.getMonth()+1).padStart(2,"0")+"-"+
+ String(d.getDate()).padStart(2,"0");
 }
 
 function uid(){
-  return Date.now().toString(36) + Math.random().toString(36).slice(2,9);
+ return Date.now().toString(36)+Math.random().toString(36).slice(2);
 }
 
-function defaultDatabase(){
-  return {master:[],activities:[],audit:[]};
+function esc(v){
+ return String(v??"").replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",
+ '"':"&quot;","'":"&#39;"
+ }[c]));
 }
 
-function loadDatabase(){
-  try{
-    const x = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if(x && Array.isArray(x.master) && Array.isArray(x.activities)){
-      return {...defaultDatabase(),...x};
-    }
-  }catch(e){}
-  return defaultDatabase();
+function fmt(v){
+ return Number(v||0).toLocaleString("id-ID");
 }
 
-function saveDatabase(){
+function dateFmt(v){
+ if(!v)return "-";
+ const p=v.split("-");
+ return p.length===3?p[2]+"/"+p[1]+"/"+p[0]:v;
+}
+
+function norm(v){
+ return String(v||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+}
+
+function normalizeType(v){
+ const x=String(v||"").trim().toLowerCase();
+ if(["inbound","in","ib"].includes(x))return "Inbound";
+ if(["outbound","out","ob"].includes(x))return "Outbound";
+ return "";
+}
+
+function defaultDB(){
+ return {master:[],activities:[],audit:[]};
+}
+
+function loadDB(){
+ try{
+  const x=JSON.parse(localStorage.getItem(STORAGE_KEY));
+  if(x&&Array.isArray(x.master)&&Array.isArray(x.activities)){
+   return {...defaultDB(),...x};
+  }
+ }catch(e){}
+ return defaultDB();
+}
+
+function saveDB(){
+ try{
   localStorage.setItem(STORAGE_KEY,JSON.stringify(db));
+ }catch(e){
+  alert("Penyimpanan browser penuh atau tidak tersedia.");
+ }
 }
 
 function logAction(action,detail){
-  db.audit.unshift({
-    id:uid(),
-    at:new Date().toLocaleString("id-ID"),
-    user:currentUser,
-    action,
-    detail
-  });
-  db.audit = db.audit.slice(0,500);
+ db.audit.unshift({
+  id:uid(),
+  time:new Date().toLocaleString("id-ID"),
+  user:currentUser,
+  action,
+  detail
+ });
+ db.audit=db.audit.slice(0,500);
 }
 
-function login(){
-  const username = document.getElementById("loginUser").value;
-  const password = document.getElementById("loginPass").value;
-  if(password !== "demo123"){
-    document.getElementById("loginError").textContent="Password salah.";
-    return;
-  }
-  currentUser = username;
-  sessionStorage.setItem("loaderops_user",username);
-  showApp();
+function isAdmin(){
+ return currentUser==="admin";
 }
 
-function logout(){
-  currentUser = "";
-  sessionStorage.removeItem("loaderops_user");
-  document.getElementById("appPage").classList.add("hidden");
-  document.getElementById("loginPage").classList.remove("hidden");
-  document.getElementById("loginPass").value="";
+function isSPV(){
+ return currentUser==="spv";
 }
 
 function isManager(){
-  return currentUser === "admin" || currentUser === "spv";
+ return isAdmin()||isSPV();
+}
+
+function isLoader(){
+ return LOADERS.includes(currentUser);
+}
+
+function loaderName(id){
+ return String(id||"").toUpperCase();
+}
+
+/* ==================================
+   LOGIN DAN HAK AKSES
+================================== */
+
+function login(){
+ const u=document.getElementById("loginUser").value;
+ const p=document.getElementById("loginPass").value;
+
+ if(p!=="demo123"){
+  document.getElementById("loginError").textContent="Password salah.";
+  return;
+ }
+
+ currentUser=u;
+ sessionStorage.setItem("loaderops_user",u);
+ showApp();
+}
+
+function logout(){
+ currentUser="";
+ sessionStorage.removeItem("loaderops_user");
+ document.getElementById("appPage").classList.add("hidden");
+ document.getElementById("loginPage").classList.remove("hidden");
+ document.getElementById("loginPass").value="";
 }
 
 function showApp(){
-  if(!USERS.includes(currentUser)){
-    logout();
-    return;
-  }
-  document.getElementById("loginPage").classList.add("hidden");
-  document.getElementById("appPage").classList.remove("hidden");
-  document.getElementById("userLabel").textContent =
-    currentUser.toUpperCase() + " | " +
-    (currentUser==="admin"?"Administrator":currentUser==="spv"?"Supervisor":"Loader");
+ if(!USERS.includes(currentUser)){
+  logout();
+  return;
+ }
+
+ document.getElementById("loginPage").classList.add("hidden");
+ document.getElementById("appPage").classList.remove("hidden");
+
+ document.getElementById("userLabel").textContent=
+  currentUser.toUpperCase()+" | "+
+  (isAdmin()?"Administrator":isSPV()?"Supervisor":"Loader");
+
+ if(isLoader()){
+  dash.loader=currentUser;
+  navigate("activities");
+ }else{
   navigate("dashboard");
+ }
+}
+
+function allowedPages(){
+ if(isAdmin()){
+  return ["dashboard","master","activities","reports","audit"];
+ }
+
+ if(isSPV()){
+  return ["dashboard","activities","reports","audit"];
+ }
+
+ if(isLoader()){
+  return ["activities"];
+ }
+
+ return [];
 }
 
 function navigate(page){
-  const allowed = ["dashboard","activities","reports"];
-  if(currentUser==="admin") allowed.push("master","audit");
-  if(currentUser==="spv") allowed.push("audit");
-  if(!allowed.includes(page)) page="dashboard";
-  currentPage=page;
+ const allowed=allowedPages();
 
-  const labels = {
-    dashboard:"📊 Dashboard",
-    activities:"📋 Aktivitas Loader",
-    master:"📁 Master Data",
-    reports:"📈 Laporan",
-    audit:"🕒 Audit Log"
-  };
+ if(!allowed.includes(page)){
+  page=isLoader()?"activities":"dashboard";
+ }
 
-  document.getElementById("navigation").innerHTML =
-    allowed.map(p=>`<button class="${p===page?"active":""}"
-      onclick="navigate('${p}')">${labels[p]}</button>`).join("");
+ currentPage=page;
 
-  render();
+ const labels={
+  dashboard:"📊 Dashboard",
+  master:"📁 Upload Master Data",
+  activities:"📋 Aktivitas Loader",
+  reports:"📈 Laporan",
+  audit:"🕒 Audit Log"
+ };
+
+ document.getElementById("navigation").innerHTML=
+  allowed.map(p=>`
+   <button class="${p===page?"active":""}"
+   onclick="navigate('${p}')">${labels[p]}</button>
+  `).join("");
+
+ render();
 }
 
 function render(){
-  if(currentPage==="dashboard") renderDashboard();
-  if(currentPage==="activities") renderActivities();
-  if(currentPage==="master") renderMaster();
-  if(currentPage==="reports") renderReports();
-  if(currentPage==="audit") renderAudit();
+ if(currentPage==="dashboard")renderDashboard();
+ if(currentPage==="master")renderMaster();
+ if(currentPage==="activities")renderActivities();
+ if(currentPage==="reports")renderReports();
+ if(currentPage==="audit")renderAudit();
 }
 
-function getValidation(activity){
-  const matches = db.master.filter(m =>
-    m.date === activity.date &&
-    m.type === activity.type &&
-    normalizeNumber(m.number) === normalizeNumber(activity.number)
-  );
+/* ==================================
+   MASTER DATA DAN VALIDASI
+================================== */
 
-  if(!matches.length){
-    return {
-      status:"Belum Dicocokkan",
-      masterQty:null,
-      difference:null,
-      note:"Nomor tidak ditemukan pada master"
-    };
-  }
+function getValidation(a){
+ const matches=db.master.filter(m=>
+  m.date===a.date&&
+  m.type===a.type&&
+  norm(m.number)===norm(a.number)
+ );
 
-  const master = matches[0];
-  const diff = Number(activity.qty)-Number(master.qty);
-
+ if(!matches.length){
   return {
-    status:diff===0?"Sesuai":"Tidak Sesuai",
-    masterQty:Number(master.qty),
-    difference:diff,
-    note:diff===0?"Cocok dengan master":"Selisih qty carton"
+   status:"Belum Dicocokkan",
+   masterQty:null,
+   difference:null,
+   note:"Master tidak ditemukan"
   };
-}
+ }
 
-function visibleActivities(){
-  return isManager()
-    ? db.activities
-    : db.activities.filter(a=>a.loader===currentUser);
-}
-
-function inRange(date,start,end){
-  return (!start || date>=start) && (!end || date<=end);
-}
-
-function statusTag(status){
-  const cls = status==="Sesuai"?"ok":
-    status==="Tidak Sesuai"?"bad":"wait";
-  return `<span class="tag ${cls}">${esc(status)}</span>`;
-}
-
-function getDashboardRows(){
-  return visibleActivities().filter(a =>
-    inRange(a.date,dashboardFilter.start,dashboardFilter.end) &&
-    (dashboardFilter.loader==="all" || a.loader===dashboardFilter.loader)
-  );
-}
-
-function filterFields(){
-  return `
-    <div class="field">
-      <label>Tanggal Mulai</label>
-      <input type="date" id="dashStart" value="${esc(dashboardFilter.start)}">
-    </div>
-    <div class="field">
-      <label>Tanggal Akhir</label>
-      <input type="date" id="dashEnd" value="${esc(dashboardFilter.end)}">
-    </div>
-    <div class="field">
-      <label>Loader</label>
-      <select id="dashLoader" ${!isManager()?"disabled":""}>
-        <option value="all">Semua Loader</option>
-        ${LOADERS.map(x=>`<option value="${x}"
-          ${dashboardFilter.loader===x?"selected":""}>${x.toUpperCase()}</option>`).join("")}
-      </select>
-    </div>
-    <div class="field">
-      <button class="btn" onclick="applyDashboardFilter()">Terapkan Filter</button>
-      <button class="btn light" onclick="resetDashboardFilter()">Reset</button>
-    </div>`;
-}
-
-function applyDashboardFilter(){
-  const start=document.getElementById("dashStart").value;
-  const end=document.getElementById("dashEnd").value;
-  if(start && end && start>end){
-    alert("Tanggal mulai tidak boleh melebihi tanggal akhir.");
-    return;
-  }
-  dashboardFilter={
-    start,end,
-    loader:isManager()?document.getElementById("dashLoader").value:currentUser
+ if(matches.length>1){
+  return {
+   status:"Tidak Sesuai",
+   masterQty:null,
+   difference:null,
+   note:"Duplikasi master"
   };
-  renderDashboard();
-}
+ }
 
-function resetDashboardFilter(){
-  dashboardFilter={
-    start:localDate(),
-    end:localDate(),
-    loader:isManager()?"all":currentUser
-  };
-  renderDashboard();
-}
+ const m=matches[0];
+ const difference=Number(a.qty)-Number(m.qty);
 
-function renderDashboard(){
-  if(!isManager()) dashboardFilter.loader=currentUser;
-  const rows=getDashboardRows();
-  const inbound=rows.filter(a=>a.type==="Inbound");
-  const outbound=rows.filter(a=>a.type==="Outbound");
-  const sum=arr=>arr.reduce((s,a)=>s+Number(a.qty),0);
-
-  const valid=rows.filter(a=>getValidation(a).status==="Sesuai").length;
-  const invalid=rows.filter(a=>getValidation(a).status==="Tidak Sesuai").length;
-  const pending=rows.length-valid-invalid;
-
-  const names=isManager()
-    ? (dashboardFilter.loader==="all"?LOADERS:[dashboardFilter.loader])
-    : [currentUser];
-
-  const performance=names.map(name=>{
-    const data=rows.filter(a=>a.loader===name);
-    return {
-      name,
-      inbound:sum(data.filter(a=>a.type==="Inbound")),
-      outbound:sum(data.filter(a=>a.type==="Outbound")),
-      count:data.length
-    };
-  });
-
-  const max=Math.max(1,...performance.flatMap(x=>[x.inbound,x.outbound]));
-
-  document.getElementById("content").innerHTML=`
-    <div class="panel">
-      <h3>Dashboard Operasional Warehouse</h3>
-      <div class="filters">${filterFields()}</div>
-      <p class="muted">Periode:
-        ${dashboardFilter.start?formatDate(dashboardFilter.start):"Semua tanggal"}
-        s.d.
-        ${dashboardFilter.end?formatDate(dashboardFilter.end):"Semua tanggal"}
-      </p>
-    </div>
-
-    <div class="cards">
-      ${kpi("Total Aktivitas",rows.length,"Transaksi Inbound + Outbound")}
-      ${kpi("Carton Inbound",sum(inbound),"Dari input Loader")}
-      ${kpi("Carton Outbound",sum(outbound),"Dari input Loader")}
-      ${kpi("Aktivitas Sesuai",valid,"Cocok dengan master")}
-      ${kpi("Tidak Sesuai",invalid,"Perlu pemeriksaan")}
-      ${kpi("Belum Dicocokkan",pending,"Master belum ditemukan")}
-      ${kpi("Jumlah Inbound",inbound.length,"Aktivitas")}
-      ${kpi("Jumlah Outbound",outbound.length,"Aktivitas")}
-    </div>
-
-    <div class="panel">
-      <h3>📊 Performa Carton per Loader</h3>
-      <p class="muted">Grafik menggunakan qty carton yang diinput Loader
-        dan mengikuti filter tanggal serta nama Loader.</p>
-      <div class="legend">
-        <span><i class="dot blue"></i>Inbound</span>
-        <span><i class="dot orange"></i>Outbound</span>
-      </div>
-      ${performance.map(x=>`
-        <div style="margin-bottom:22px">
-          <b>${esc(x.name.toUpperCase())}</b>
-          <span class="muted">(${x.count} aktivitas)</span>
-          ${chartBar("Inbound",x.inbound,max,"blue")}
-          ${chartBar("Outbound",x.outbound,max,"orange")}
-        </div>`).join("")}
-      ${rows.length===0?'<p class="muted">Belum ada aktivitas pada periode ini.</p>':""}
-    </div>
-
-    <div class="panel">
-      <h3>Status Validasi Aktivitas</h3>
-      ${renderActivityTable(rows.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,20),false)}
-    </div>`;
-}
-
-function kpi(name,value,sub){
-  return `<div class="kpi">
-    <div class="name">${esc(name)}</div>
-    <div class="value">${formatQty(value)}</div>
-    <div class="sub">${esc(sub)}</div>
-  </div>`;
-}
-
-function chartBar(label,value,max,color){
-  const percent=value===0?0:Math.max(1,value/max*100);
-  return `<div class="chart-row">
-    <span class="muted">${label}</span>
-    <div class="track"><div class="bar ${color}" style="width:${percent}%"></div></div>
-    <b style="text-align:right">${formatQty(value)}</b>
-  </div>`;
-}
-
-function renderActivities(){
-  const rows=visibleActivities().filter(a=>
-    (activityFilter.type==="all" || a.type===activityFilter.type) &&
-    inRange(a.date,activityFilter.start,activityFilter.end)
-  ).sort((a,b)=>b.date.localeCompare(a.date));
-
-  document.getElementById("content").innerHTML=`
-    <div class="panel">
-      <div class="toolbar">
-        <h3>Aktivitas Inbound & Outbound</h3>
-        <button class="btn green" onclick="openActivityForm()">+ Input Aktivitas</button>
-      </div>
-      <div class="filters">
-        <div class="field"><label>Jenis</label>
-          <select id="actType">
-            <option value="all">Semua</option>
-            <option value="Inbound" ${activityFilter.type==="Inbound"?"selected":""}>Inbound</option>
-            <option value="Outbound" ${activityFilter.type==="Outbound"?"selected":""}>Outbound</option>
-          </select>
-        </div>
-        <div class="field"><label>Dari Tanggal</label>
-          <input type="date" id="actStart" value="${esc(activityFilter.start)}">
-        </div>
-        <div class="field"><label>Sampai Tanggal</label>
-          <input type="date" id="actEnd" value="${esc(activityFilter.end)}">
-        </div>
-        <div class="field">
-          <button class="btn" onclick="applyActivityFilter()">Filter</button>
-          <button class="btn light" onclick="resetActivityFilter()">Reset</button>
-        </div>
-      </div>
-    </div>
-    <div id="activityFormArea"></div>
-    <div class="panel">
-      <h3>Daftar Aktivitas (${rows.length})</h3>
-      ${renderActivityTable(rows,true)}
-    </div>`;
-}
-
-function applyActivityFilter(){
-  const start=document.getElementById("actStart").value;
-  const end=document.getElementById("actEnd").value;
-  if(start && end && start>end){
-    alert("Rentang tanggal tidak valid.");
-    return;
-  }
-  activityFilter={
-    type:document.getElementById("actType").value,
-    start,end
-  };
-  renderActivities();
-}
-
-function resetActivityFilter(){
-  activityFilter={type:"all",start:"",end:""};
-  renderActivities();
-}
-
-function renderActivityTable(rows,actions){
-  if(!rows.length) return '<p class="muted">Belum ada data aktivitas.</p>';
-
-  return `<div class="table-wrap"><table>
-    <thead><tr>
-      <th>Tanggal</th><th>Loader</th><th>Jenis</th>
-      <th>No. Mobil / Container</th><th>Qty Loader</th>
-      <th>Qty Master</th><th>Selisih</th><th>Status</th>
-      ${actions?"<th>Aksi</th>":""}
-    </tr></thead>
-    <tbody>${rows.map(a=>{
-      const v=getValidation(a);
-      const canEdit=isManager() || a.loader===currentUser;
-      return `<tr>
-        <td>${formatDate(a.date)}</td>
-        <td>${esc(a.loader.toUpperCase())}</td>
-        <td>${esc(a.type)}</td>
-        <td>${esc(a.number)}</td>
-        <td>${formatQty(a.qty)}</td>
-        <td>${v.masterQty===null?"-":formatQty(v.masterQty)}</td>
-        <td>${v.difference===null?"-":formatQty(v.difference)}</td>
-        <td>${statusTag(v.status)}</td>
-        ${actions?`<td>${canEdit?`
-          <button class="btn light" onclick="openActivityForm('${a.id}')">Edit</button>
-          <button class="btn red" onclick="deleteActivity('${a.id}')">Hapus</button>`:"-"}</td>`:""}
-      </tr>`;
-    }).join("")}</tbody>
-  </table></div>`;
-}
-
-function openActivityForm(id=""){
-  const a=id?db.activities.find(x=>x.id===id):null;
-  if(id && !a) return;
-  if(a && !isManager() && a.loader!==currentUser) return;
-
-  const loader=a?.loader || (isManager()?LOADERS[0]:currentUser);
-
-  document.getElementById("activityFormArea").innerHTML=`
-    <div class="panel">
-      <h3>${a?"Edit":"Tambah"} Aktivitas</h3>
-      <div class="form-grid">
-        <div class="field"><label>Tanggal</label>
-          <input type="date" id="formDate" value="${esc(a?.date||localDate())}">
-        </div>
-        <div class="field"><label>Jenis Aktivitas</label>
-          <select id="formType">
-            <option value="Inbound" ${a?.type==="Inbound"?"selected":""}>Inbound</option>
-            <option value="Outbound" ${a?.type==="Outbound"?"selected":""}>Outbound</option>
-          </select>
-        </div>
-        <div class="field"><label>Loader</label>
-          <select id="formLoader" ${!isManager()?"disabled":""}>
-            ${LOADERS.map(x=>`<option value="${x}" ${loader===x?"selected":""}>${x.toUpperCase()}</option>`).join("")}
-          </select>
-        </div>
-        <div class="field"><label>No. Mobil / Container</label>
-          <input id="formNumber" value="${esc(a?.number||"")}" placeholder="Contoh B 9123 XYZ">
-        </div>
-        <div class="field"><label>Total Qty Carton</label>
-          <input type="number" id="formQty" min="0" step="1" value="${a?.qty??""}">
-        </div>
-      </div>
-      <p class="muted">Nomor mobil digunakan untuk Inbound.
-        Nomor container digunakan untuk Outbound.</p>
-      <div class="form-actions">
-        <button class="btn green" onclick="saveActivity('${id}')">Simpan Aktivitas</button>
-        <button class="btn gray" onclick="renderActivities()">Batal</button>
-      </div>
-    </div>`;
-  document.getElementById("activityFormArea").scrollIntoView({behavior:"smooth"});
-}
-
-function saveActivity(id){
-  const date=document.getElementById("formDate").value;
-  const type=document.getElementById("formType").value;
-  const number=document.getElementById("formNumber").value.trim().toUpperCase();
-  const qtyText=document.getElementById("formQty").value;
-  const qty=Number(qtyText);
-  const loader=isManager()?document.getElementById("formLoader").value:currentUser;
-
-  if(!date || !number || qtyText==="" ||
-    !Number.isSafeInteger(qty) || qty<0){
-    alert("Isi tanggal, nomor kendaraan/container, dan qty carton dengan benar.");
-    return;
-  }
-
-  const duplicate=db.activities.find(a=>
-    a.id!==id && a.date===date && a.type===type &&
-    normalizeNumber(a.number)===normalizeNumber(number)
-  );
-
-  if(duplicate){
-    alert("DUPLIKAT! Nomor ini sudah diinput pada tanggal dan jenis aktivitas yang sama oleh "+duplicate.loader.toUpperCase()+".");
-    return;
-  }
-
-  const existing=id?db.activities.find(a=>a.id===id):null;
-  if(id && !existing) return;
-  if(existing && !isManager() && existing.loader!==currentUser) return;
-
-  const record={
-    id:id||uid(),
-    date,type,number,qty,loader,
-    createdAt:existing?.createdAt||new Date().toISOString(),
-    updatedAt:new Date().toISOString()
-  };
-
-  if(existing){
-    db.activities=db.activities.map(a=>a.id===id?record:a);
-  }else{
-    db.activities.push(record);
-  }
-
-  logAction(existing?"EDIT AKTIVITAS":"INPUT AKTIVITAS",
-    `${date} | ${type} | ${number} | ${qty} carton | ${loader}`);
-  saveDatabase();
-  alert("Aktivitas tersimpan. Status validasi sudah diperbarui.");
-  renderActivities();
-}
-
-function deleteActivity(id){
-  const a=db.activities.find(x=>x.id===id);
-  if(!a) return;
-  if(!isManager() && a.loader!==currentUser) return;
-  if(!confirm("Yakin ingin menghapus aktivitas ini?")) return;
-
-  db.activities=db.activities.filter(x=>x.id!==id);
-  logAction("HAPUS AKTIVITAS",
-    `${a.date} | ${a.type} | ${a.number} | ${a.loader}`);
-  saveDatabase();
-  renderActivities();
-}
-
-function renderMaster(){
-  if(currentUser!=="admin") return navigate("dashboard");
-
-  const rows=db.master.slice().sort((a,b)=>
-    b.date.localeCompare(a.date) || a.type.localeCompare(b.type)
-  );
-
-  document.getElementById("content").innerHTML=`
-    <div class="panel">
-      <h3>📁 Upload Master Data Mingguan</h3>
-      <div class="notice">
-        Upload master sebagai acuan validasi aktivitas Loader.
-        Format: <b>tanggal, jenis, nomor, qty</b>.
-        Satu tanggal boleh memiliki banyak nomor mobil/container berbeda.
-      </div>
-      <div class="form-grid">
-        <div class="field">
-          <label>Pilih File Master (.csv)</label>
-          <input type="file" id="masterFile" accept=".csv,text/csv">
-        </div>
-        <div class="field">
-          <label>Mode Upload</label>
-          <select id="masterMode">
-            <option value="merge">Tambah / Perbarui Data</option>
-            <option value="replace">Ganti Seluruh Master</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>&nbsp;</label>
-          <button class="btn green" onclick="uploadMaster()">Upload Master</button>
-        </div>
-      </div>
-      <button class="btn light" onclick="downloadMasterTemplate()">⬇ Download Template CSV</button>
-      <p class="muted">CSV dapat dibuat dari Microsoft Excel melalui
-        File → Save As → CSV UTF-8.</p>
-      <p class="muted">Mode Tambah/Perbarui akan mengganti baris master
-        dengan kombinasi tanggal + jenis + nomor yang sama.
-        Mode Ganti Seluruh Master akan menghapus master sebelumnya.</p>
-    </div>
-
-    <div class="cards">
-      ${kpi("Total Master",rows.length,"Baris acuan")}
-      ${kpi("Master Inbound",rows.filter(x=>x.type==="Inbound").length,"Nomor mobil")}
-      ${kpi("Master Outbound",rows.filter(x=>x.type==="Outbound").length,"Nomor container")}
-      ${kpi("Aktivitas Loader",db.activities.length,"Data yang divalidasi")}
-    </div>
-
-    <div class="panel">
-      <div class="toolbar">
-        <h3>Daftar Master Data</h3>
-        <button class="btn light" onclick="exportMaster()">Ekspor Master CSV</button>
-      </div>
-      ${rows.length?`<div class="table-wrap"><table>
-        <thead><tr><th>Tanggal</th><th>Jenis</th>
-          <th>No. Mobil / Container</th><th>Qty Carton</th><th>Aksi</th></tr></thead>
-        <tbody>${rows.map(m=>`<tr>
-          <td>${formatDate(m.date)}</td>
-          <td>${esc(m.type)}</td>
-          <td>${esc(m.number)}</td>
-          <td>${formatQty(m.qty)}</td>
-          <td><button class="btn red" onclick="deleteMaster('${m.id}')">Hapus</button></td>
-        </tr>`).join("")}</tbody>
-      </table></div>`:'<p class="muted">Belum ada master yang diunggah.</p>'}
-    </div>`;
-}
-
-function parseDate(value){
-  const s=String(value??"").trim();
-  if(/^\d{4}-\d{2}-\d{2}$/.test(s)){
-    const d=new Date(s+"T12:00:00");
-    return !isNaN(d) && localDate(d)===s?s:"";
-  }
-  const m=s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
-  if(m){
-    const iso=`${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`;
-    const d=new Date(iso+"T12:00:00");
-    return !isNaN(d)&&localDate(d)===iso?iso:"";
-  }
-  return "";
-}
-
-function parseCSV(text){
-  text=text.replace(/^\uFEFF/,"");
-  const rows=[];
-  let row=[],cell="",quoted=false;
-
-  for(let i=0;i<text.length;i++){
-    const c=text[i];
-    if(c==='"'){
-      if(quoted && text[i+1]==='"'){cell+='"';i++;}
-      else quoted=!quoted;
-    }else if(c==="," && !quoted){
-      row.push(cell);cell="";
-    }else if((c==="\n" || c==="\r") && !quoted){
-      if(c==="\r" && text[i+1]==="\n")i++;
-      row.push(cell);
-      if(row.some(x=>x.trim()!==""))rows.push(row);
-      row=[];cell="";
-    }else{
-      cell+=c;
-    }
-  }
-  if(quoted)throw Error("Format tanda kutip CSV tidak lengkap.");
-  row.push(cell);
-  if(row.some(x=>x.trim()!==""))rows.push(row);
-  return rows;
+ return {
+  status:difference===0?"Sesuai":"Tidak Sesuai",
+  masterQty:Number(m.qty),
+  difference,
+  note:difference===0?"Sesuai dengan master":"Selisih carton"
+ };
 }
 
 function masterKey(m){
-  return `${m.date}|${m.type}|${normalizeNumber(m.number)}`;
+ return m.date+"|"+m.type+"|"+norm(m.number);
+}
+
+function renderMaster(){
+ if(!isAdmin()){
+  navigate("dashboard");
+  return;
+ }
+
+ const rows=db.master.slice().sort((a,b)=>b.date.localeCompare(a.date));
+
+ const valid=db.activities.filter(a=>getValidation(a).status==="Sesuai").length;
+ const invalid=db.activities.filter(a=>getValidation(a).status==="Tidak Sesuai").length;
+ const pending=db.activities.length-valid-invalid;
+
+ document.getElementById("content").innerHTML=`
+ <section class="panel">
+  <h3>Upload Master Data Mingguan</h3>
+  <div class="notice">
+   Upload master berisi tanggal, jenis aktivitas, nomor mobil/container,
+   dan total qty carton. Satu tanggal dapat memiliki banyak nomor berbeda.
+  </div>
+  <div class="formgrid">
+   <div class="field">
+    <label>File Master CSV</label>
+    <input type="file" id="masterFile" accept=".csv,text/csv">
+   </div>
+   <div class="field">
+    <label>Mode Upload</label>
+    <select id="masterMode">
+     <option value="merge">Tambah / Perbarui Master</option>
+     <option value="replace">Ganti Seluruh Master</option>
+    </select>
+   </div>
+   <div class="field">
+    <label>&nbsp;</label>
+    <button class="btn green" onclick="uploadMaster()">Upload & Validasi</button>
+   </div>
+  </div>
+  <button class="btn light" onclick="downloadTemplate()">Download Template CSV</button>
+  <p class="muted">
+   Kolom wajib: tanggal, jenis, nomor, qty.
+   File Excel disimpan terlebih dahulu sebagai CSV UTF-8.
+  </p>
+ </section>
+
+ <div class="cards">
+  ${kpi("Total Master",rows.length,"Baris acuan")}
+  ${kpi("Aktivitas Sesuai",valid,"Validasi")}
+  ${kpi("Tidak Sesuai",invalid,"Perlu pemeriksaan")}
+  ${kpi("Belum Dicocokkan",pending,"Belum ada pasangan master")}
+ </div>
+
+ <section class="panel">
+  <div class="toolbar">
+   <h3>Daftar Master Data</h3>
+   <button class="btn light" onclick="exportMaster()">Ekspor CSV</button>
+  </div>
+  ${masterTable(rows)}
+ </section>`;
+}
+
+function masterTable(rows){
+ if(!rows.length)return '<p class="muted">Belum ada master data.</p>';
+
+ return `<div class="tablewrap"><table>
+ <thead><tr>
+ <th>Tanggal</th><th>Jenis</th><th>No Mobil/Container</th><th>Qty Carton</th><th>Aksi</th>
+ </tr></thead><tbody>
+ ${rows.map(m=>`<tr>
+ <td>${dateFmt(m.date)}</td>
+ <td>${esc(m.type)}</td>
+ <td>${esc(m.number)}</td>
+ <td>${fmt(m.qty)}</td>
+ <td><button class="btn red" onclick="deleteMaster('${m.id}')">Hapus</button></td>
+ </tr>`).join("")}
+ </tbody></table></div>`;
+}
+
+function parseDate(v){
+ const s=String(v||"").trim();
+
+ if(/^\d{4}-\d{2}-\d{2}$/.test(s)){
+  const d=new Date(s+"T12:00:00");
+  return !isNaN(d)&&d.toISOString().slice(0,10)===s?s:"";
+ }
+
+ const m=s.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+
+ if(m){
+  const iso=m[3]+"-"+m[2].padStart(2,"0")+"-"+m[1].padStart(2,"0");
+  const d=new Date(iso+"T12:00:00");
+  return !isNaN(d)&&d.toISOString().slice(0,10)===iso?iso:"";
+ }
+
+ return "";
+}
+
+function parseCSV(text){
+ text=text.replace(/^\uFEFF/,"");
+ const rows=[];
+ let row=[],cell="",quoted=false;
+
+ for(let i=0;i<text.length;i++){
+  const c=text[i];
+
+  if(c==='"'){
+   if(quoted&&text[i+1]==='"'){
+    cell+='"';i++;
+   }else{
+    quoted=!quoted;
+   }
+  }else if(c===","&&!quoted){
+   row.push(cell);cell="";
+  }else if((c==="\n"||c==="\r")&&!quoted){
+   if(c==="\r"&&text[i+1]==="\n")i++;
+   row.push(cell);
+   if(row.some(x=>x.trim()!==""))rows.push(row);
+   row=[];cell="";
+  }else{
+   cell+=c;
+  }
+ }
+
+ if(quoted)throw Error("Format CSV tidak valid.");
+ row.push(cell);
+ if(row.some(x=>x.trim()!==""))rows.push(row);
+ return rows;
 }
 
 async function uploadMaster(){
-  const input=document.getElementById("masterFile");
-  const file=input.files[0];
-  const mode=document.getElementById("masterMode").value;
+ if(!isAdmin())return;
 
-  if(!file){alert("Pilih file CSV terlebih dahulu.");return;}
+ const file=document.getElementById("masterFile").files[0];
+ const mode=document.getElementById("masterMode").value;
 
-  try{
-    const rows=parseCSV(await file.text());
-    if(rows.length<2)throw Error("File tidak memiliki data.");
+ if(!file)return alert("Pilih file master terlebih dahulu.");
 
-    const headers=rows[0].map(x=>x.trim().toLowerCase()
-      .replace(/[\s_-]+/g,""));
+ try{
+  const rows=parseCSV(await file.text());
 
-    const findHeader=(names)=>headers.findIndex(x=>names.includes(x));
+  if(rows.length<2)throw Error("File kosong.");
 
-    const dateIndex=findHeader(["tanggal","date"]);
-    const typeIndex=findHeader(["jenis","type","aktivitas","jenisaktivitas"]);
-    const numberIndex=findHeader([
-      "nomor","nomobil","nocontainer","nomobil/nocontainer",
-      "nomobilnocontainer","nopol","number","referensi"
-    ]);
-    const qtyIndex=findHeader([
-      "qty","qtycarton","totalqtycarton","totalcarton",
-      "carton","jumlahcarton"
-    ]);
+  const h=rows[0].map(x=>x.toLowerCase().trim().replace(/[\s_-]+/g,""));
+  const find=names=>h.findIndex(x=>names.includes(x));
 
-    if([dateIndex,typeIndex,numberIndex,qtyIndex].includes(-1)){
-      throw Error("Header harus memuat: tanggal, jenis, nomor, qty. Gunakan template CSV.");
-    }
+  const di=find(["tanggal","date"]);
+  const ti=find(["jenis","type","aktivitas","jenisaktivitas"]);
+  const ni=find(["nomor","nomobil","nocontainer","nomobilcontainer","referensi","nopol"]);
+  const qi=find(["qty","carton","qtycarton","totalcarton","totalqtycarton"]);
 
-    const imported=[];
-    const seen=new Set();
-
-    for(let i=1;i<rows.length;i++){
-      const cells=rows[i];
-      const date=parseDate(cells[dateIndex]);
-      const type=normalizeType(cells[typeIndex]);
-      const number=String(cells[numberIndex]??"").trim().toUpperCase();
-      const rawQty=String(cells[qtyIndex]??"").trim();
-      const qty=Number(rawQty);
-
-      if(!date || !type || !number || rawQty==="" ||
-        !Number.isSafeInteger(qty) || qty<0){
-        throw Error(`Baris ${i+1} tidak valid. Periksa tanggal, jenis, nomor, dan qty.`);
-      }
-
-      const item={id:uid(),date,type,number,qty};
-      const key=masterKey(item);
-
-      if(seen.has(key)){
-        throw Error(`Baris ${i+1} duplikat dalam file: ${date} ${type} ${number}`);
-      }
-      seen.add(key);
-      imported.push(item);
-    }
-
-    if(!imported.length)throw Error("Tidak ada baris master yang valid.");
-
-    if(mode==="replace"){
-      if(!confirm("Mode Ganti Seluruh Master akan menghapus semua master lama. Lanjutkan?"))return;
-      db.master=imported;
-    }else{
-      const map=new Map(db.master.map(m=>[masterKey(m),m]));
-      for(const m of imported)map.set(masterKey(m),m);
-      db.master=Array.from(map.values());
-    }
-
-    logAction("UPLOAD MASTER",`${file.name} | ${imported.length} baris | ${mode}`);
-    saveDatabase();
-    alert(`${imported.length} baris master berhasil diupload.\nValidasi aktivitas Loader otomatis diperbarui.`);
-    renderMaster();
-  }catch(err){
-    alert("Upload gagal: "+err.message);
+  if([di,ti,ni,qi].includes(-1)){
+   throw Error("Header wajib: tanggal, jenis, nomor, qty.");
   }
+
+  const imported=[];
+  const seen=new Set();
+
+  for(let i=1;i<rows.length;i++){
+   const r=rows[i];
+   const date=parseDate(r[di]);
+   const type=normalizeType(r[ti]);
+   const number=String(r[ni]||"").trim().toUpperCase();
+   const raw=String(r[qi]??"").trim();
+   const qty=Number(raw);
+
+   if(!date||!type||!number||raw===""||!Number.isSafeInteger(qty)||qty<0){
+    throw Error("Data tidak valid pada baris "+(i+1));
+   }
+
+   const m={id:uid(),date,type,number,qty};
+   const key=masterKey(m);
+
+   if(seen.has(key)){
+    throw Error("Duplikat master pada baris "+(i+1)+": "+number);
+   }
+
+   seen.add(key);
+   imported.push(m);
+  }
+
+  if(mode==="replace"){
+   if(!confirm("Ganti seluruh master lama dengan file baru?"))return;
+   db.master=imported;
+  }else{
+   const map=new Map(db.master.map(m=>[masterKey(m),m]));
+   imported.forEach(m=>map.set(masterKey(m),m));
+   db.master=Array.from(map.values());
+  }
+
+  logAction("UPLOAD MASTER",file.name+" - "+imported.length+" baris");
+  saveDB();
+
+  alert(imported.length+" master berhasil diupload. Seluruh aktivitas otomatis divalidasi ulang.");
+  renderMaster();
+
+ }catch(e){
+  alert("Upload gagal: "+e.message);
+ }
 }
 
 function deleteMaster(id){
-  if(currentUser!=="admin")return;
-  const m=db.master.find(x=>x.id===id);
-  if(!m || !confirm("Hapus baris master ini?"))return;
-  db.master=db.master.filter(x=>x.id!==id);
-  logAction("HAPUS MASTER",`${m.date} | ${m.type} | ${m.number}`);
-  saveDatabase();
-  renderMaster();
+ if(!isAdmin())return;
+ const m=db.master.find(x=>x.id===id);
+ if(!m)return;
+ if(!confirm("Hapus master ini?"))return;
+
+ db.master=db.master.filter(x=>x.id!==id);
+ logAction("HAPUS MASTER",m.number);
+ saveDB();
+ renderMaster();
 }
 
-function csvCell(value){
-  const s=String(value??"");
-  return '"'+s.replace(/"/g,'""')+'"';
+/* ==================================
+   TEMPLATE DAN EKSPOR CSV
+================================== */
+
+function csvCell(v){
+ return '"'+String(v??"").replace(/"/g,'""')+'"';
 }
 
 function downloadCSV(filename,headers,rows){
-  const csv=[headers,...rows].map(row=>row.map(csvCell).join(",")).join("\r\n");
-  const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url;a.download=filename;
-  document.body.appendChild(a);a.click();a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),1000);
+ const csv=[headers,...rows]
+  .map(r=>r.map(csvCell).join(",")).join("\r\n");
+
+ const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement("a");
+ a.href=url;
+ a.download=filename;
+ document.body.appendChild(a);
+ a.click();
+ a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 
-function downloadMasterTemplate(){
-  downloadCSV("template_master_loaderops.csv",
-    ["tanggal","jenis","nomor","qty"],
-    [
-      ["2026-11-03","Inbound","B 9123 XYZ",500],
-      ["2026-11-03","Inbound","B 9876 ABC",320],
-      ["2026-11-03","Outbound","BSIU8021455",750]
-    ]);
+function downloadTemplate(){
+ downloadCSV("template_master_loaderops.csv",
+ ["tanggal","jenis","nomor","qty"],
+ [
+  ["2026-11-03","Inbound","B 9123 XYZ",500],
+  ["2026-11-03","Inbound","B 9876 ABC",320],
+  ["2026-11-03","Outbound","BSIU8021455",750]
+ ]);
 }
 
 function exportMaster(){
-  downloadCSV("master_loaderops.csv",
-    ["tanggal","jenis","nomor","qty"],
-    db.master.map(m=>[m.date,m.type,m.number,m.qty]));
+ downloadCSV("master_loaderops.csv",
+ ["tanggal","jenis","nomor","qty"],
+ db.master.map(m=>[m.date,m.type,m.number,m.qty]));
 }
 
-function renderReports(){
-  const rows=getDashboardRows();
-  const total=rows.reduce((s,a)=>s+Number(a.qty),0);
+/* ==================================
+   DASHBOARD DAN FILTER TANGGAL
+================================== */
 
-  document.getElementById("content").innerHTML=`
-    <div class="panel">
-      <h3>📈 Laporan Operasional</h3>
-      <p class="muted">Laporan mengikuti filter tanggal dan Loader pada menu Dashboard.</p>
-      <div class="toolbar">
-        <div>
-          <b>Periode:</b> ${dashboardFilter.start||"Semua"} s.d.
-          ${dashboardFilter.end||"Semua"}<br>
-          <span class="muted">Loader: ${esc(dashboardFilter.loader)}</span>
-        </div>
-        <div>
-          <button class="btn green" onclick="exportReport()">⬇ Ekspor CSV</button>
-          <button class="btn gray" onclick="window.print()">🖨 Cetak / PDF</button>
-        </div>
-      </div>
-      <div class="cards">
-        ${kpi("Aktivitas",rows.length,"Total transaksi")}
-        ${kpi("Total Carton",total,"Input Loader")}
-        ${kpi("Sesuai",rows.filter(a=>getValidation(a).status==="Sesuai").length,"Master cocok")}
-        ${kpi("Tidak Sesuai",rows.filter(a=>getValidation(a).status==="Tidak Sesuai").length,"Perlu diperiksa")}
-      </div>
-      ${renderActivityTable(rows,false)}
-    </div>`;
+function kpi(name,value,sub){
+ return `<div class="kpi">
+ <div class="name">${esc(name)}</div>
+ <div class="value">${fmt(value)}</div>
+ <div class="sub">${esc(sub)}</div>
+ </div>`;
+}
+
+function tag(status){
+ const cls=status==="Sesuai"?"ok":status==="Tidak Sesuai"?"bad":"wait";
+ return `<span class="tag ${cls}">${esc(status)}</span>`;
+}
+
+function dashboardRows(){
+ return db.activities.filter(a=>
+  a.date>=dash.start&&a.date<=dash.end&&
+  (dash.loader==="all"||a.loader===dash.loader)
+ );
+}
+
+function dashboardFilterHTML(){
+ return `
+ <div class="field">
+  <label>Tanggal Mulai</label>
+  <input type="date" id="dashStart" value="${esc(dash.start)}">
+ </div>
+ <div class="field">
+  <label>Tanggal Akhir</label>
+  <input type="date" id="dashEnd" value="${esc(dash.end)}">
+ </div>
+ <div class="field">
+  <label>Loader</label>
+  <select id="dashLoader">
+   <option value="all">Semua Loader</option>
+   ${LOADERS.map(x=>`<option value="${x}" ${dash.loader===x?"selected":""}>${x.toUpperCase()}</option>`).join("")}
+  </select>
+ </div>
+ <div class="field">
+  <button class="btn" onclick="applyDashFilter()">Terapkan</button>
+  <button class="btn light" onclick="resetDashFilter()">Reset</button>
+ </div>`;
+}
+
+function applyDashFilter(){
+ const start=document.getElementById("dashStart").value;
+ const end=document.getElementById("dashEnd").value;
+
+ if(start>end)return alert("Tanggal mulai melebihi tanggal akhir.");
+
+ dash.start=start;
+ dash.end=end;
+ dash.loader=document.getElementById("dashLoader").value;
+ renderDashboard();
+}
+
+function resetDashFilter(){
+ dash={start:today(),end:today(),loader:"all"};
+ renderDashboard();
+}
+
+function renderDashboard(){
+ const rows=dashboardRows();
+ const sum=arr=>arr.reduce((s,a)=>s+Number(a.qty),0);
+ const inbound=rows.filter(a=>a.type==="Inbound");
+ const outbound=rows.filter(a=>a.type==="Outbound");
+
+ const valid=rows.filter(a=>getValidation(a).status==="Sesuai").length;
+ const invalid=rows.filter(a=>getValidation(a).status==="Tidak Sesuai").length;
+ const pending=rows.length-valid-invalid;
+
+ const loaders=dash.loader==="all"?LOADERS:[dash.loader];
+
+ const stats=loaders.map(l=>{
+  const r=rows.filter(a=>a.loader===l);
+  return {
+   name:l,
+   inbound:sum(r.filter(a=>a.type==="Inbound")),
+   outbound:sum(r.filter(a=>a.type==="Outbound")),
+   count:r.length
+  };
+ });
+
+ const max=Math.max(1,...stats.flatMap(x=>[x.inbound,x.outbound]));
+
+ document.getElementById("content").innerHTML=`
+ <section class="panel">
+  <h3>Dashboard Warehouse</h3>
+  <p class="muted">Filter periode dan performa Loader.</p>
+  <div class="filters">${dashboardFilterHTML()}</div>
+ </section>
+
+ <div class="cards">
+  ${kpi("Total Aktivitas",rows.length,"Transaksi")}
+  ${kpi("Carton Inbound",sum(inbound),"Qty input Loader")}
+  ${kpi("Carton Outbound",sum(outbound),"Qty input Loader")}
+  ${kpi("Aktivitas Sesuai",valid,"Validasi Master")}
+  ${kpi("Tidak Sesuai",invalid,"Perlu pemeriksaan")}
+  ${kpi("Belum Dicocokkan",pending,"Master tidak ditemukan")}
+  ${kpi("Jumlah Inbound",inbound.length,"Transaksi")}
+  ${kpi("Jumlah Outbound",outbound.length,"Transaksi")}
+ </div>
+
+ <section class="panel">
+  <h3>Chart Performa Carton per Loader</h3>
+  <p class="muted">Grafik mengikuti tanggal dan filter Loader yang dipilih.</p>
+  <div class="legend">
+   <span><i class="dot blue"></i>Inbound</span>
+   <span><i class="dot orange"></i>Outbound</span>
+  </div>
+  ${stats.map(x=>`
+   <div style="margin-bottom:23px">
+    <b>${x.name.toUpperCase()}</b>
+    <span class="muted">(${x.count} aktivitas)</span>
+    ${chartBar("Inbound",x.inbound,max,"blue")}
+    ${chartBar("Outbound",x.outbound,max,"orange")}
+   </div>
+  `).join("")}
+  ${!rows.length?'<p class="muted">Belum ada aktivitas pada periode ini.</p>':""}
+ </section>
+
+ <section class="panel">
+  <h3>Aktivitas Terbaru sesuai Filter</h3>
+  ${activityTable(rows.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,20),false)}
+ </section>`;
+}
+
+function chartBar(label,value,max,color){
+ const width=value===0?0:Math.max(1,value/max*100);
+ return `<div class="chartrow">
+ <span class="muted">${label}</span>
+ <div class="track"><div class="bar ${color}" style="width:${width}%"></div></div>
+ <b style="text-align:right">${fmt(value)}</b>
+ </div>`;
+}
+
+/* ==================================
+   AKTIVITAS LOADER
+================================== */
+
+function activityTable(rows,showActions=true){
+ if(!rows.length)return '<p class="muted">Belum ada aktivitas.</p>';
+
+ return `<div class="tablewrap"><table>
+ <thead><tr>
+ <th>Tanggal</th><th>Loader</th><th>Jenis</th>
+ <th>Nomor Mobil/Container</th><th>Qty Loader</th>
+ <th>Qty Master</th><th>Selisih</th><th>Status</th>
+ ${showActions?"<th>Aksi</th>":""}
+ </tr></thead>
+ <tbody>
+ ${rows.map(a=>{
+  const v=getValidation(a);
+  return `<tr>
+   <td>${dateFmt(a.date)}</td>
+   <td>${esc(a.loader.toUpperCase())}</td>
+   <td>${esc(a.type)}</td>
+   <td>${esc(a.number)}</td>
+   <td>${fmt(a.qty)}</td>
+   <td>${v.masterQty===null?"-":fmt(v.masterQty)}</td>
+   <td>${v.difference===null?"-":fmt(v.difference)}</td>
+   <td>${tag(v.status)}</td>
+   ${showActions?`<td>${isLoader()&&a.loader===currentUser?`
+    <div class="actions">
+     <button class="btn light" onclick="editActivity('${a.id}')">Edit</button>
+     <button class="btn red" onclick="deleteActivity('${a.id}')">Hapus</button>
+    </div>`:"-"}</td>`:""}
+  </tr>`;
+ }).join("")}
+ </tbody></table></div>`;
+}
+
+function renderActivities(){
+ let rows=isManager()
+  ?db.activities
+  :db.activities.filter(a=>a.loader===currentUser);
+
+ rows=rows.filter(a=>
+  (actFilter.type==="all"||a.type===actFilter.type)&&
+  (!actFilter.start||a.date>=actFilter.start)&&
+  (!actFilter.end||a.date<=actFilter.end)
+ ).sort((a,b)=>b.date.localeCompare(a.date));
+
+ document.getElementById("content").innerHTML=`
+ <section class="panel">
+  <div class="toolbar">
+   <div>
+    <h3>Aktivitas Loader</h3>
+    <p class="muted">${isLoader()?"Kamu hanya dapat mengelola aktivitas milikmu sendiri.":"Monitoring seluruh aktivitas Loader."}</p>
+   </div>
+   ${isLoader()?'<button class="btn green" onclick="openActivityForm()">+ Input Aktivitas</button>':""}
+  </div>
+  <div class="filters">
+   <div class="field">
+    <label>Jenis Aktivitas</label>
+    <select id="actType">
+     <option value="all">Semua</option>
+     <option value="Inbound" ${actFilter.type==="Inbound"?"selected":""}>Inbound</option>
+     <option value="Outbound" ${actFilter.type==="Outbound"?"selected":""}>Outbound</option>
+    </select>
+   </div>
+   <div class="field">
+    <label>Tanggal Mulai</label>
+    <input type="date" id="actStart" value="${esc(actFilter.start)}">
+   </div>
+   <div class="field">
+    <label>Tanggal Akhir</label>
+    <input type="date" id="actEnd" value="${esc(actFilter.end)}">
+   </div>
+   <div class="field">
+    <button class="btn" onclick="applyActFilter()">Filter</button>
+    <button class="btn light" onclick="resetActFilter()">Reset</button>
+   </div>
+  </div>
+ </section>
+ <div id="activityForm"></div>
+ <section class="panel">
+  <div class="toolbar">
+   <h3>Daftar Aktivitas (${rows.length})</h3>
+  </div>
+  ${activityTable(rows,true)}
+ </section>`;
+}
+
+function applyActFilter(){
+ const start=document.getElementById("actStart").value;
+ const end=document.getElementById("actEnd").value;
+ if(start&&end&&start>end)return alert("Rentang tanggal tidak valid.");
+
+ actFilter={
+  type:document.getElementById("actType").value,
+  start,end
+ };
+ renderActivities();
+}
+
+function resetActFilter(){
+ actFilter={type:"all",start:"",end:""};
+ renderActivities();
+}
+
+/* ==================================
+   INPUT DAN EDIT AKTIVITAS
+================================== */
+
+function openActivityForm(id=""){
+ if(!isLoader()){
+  alert("Hanya akun Loader yang boleh menginput atau mengedit aktivitas.");
+  return;
+ }
+
+ const a=id?db.activities.find(x=>x.id===id):null;
+
+ if(id&&!a)return alert("Aktivitas tidak ditemukan.");
+
+ if(a&&a.loader!==currentUser){
+  return alert("Kamu hanya dapat mengedit aktivitas milik sendiri.");
+ }
+
+ editingId=id;
+
+ document.getElementById("activityForm").innerHTML=`
+ <section class="panel">
+  <h3>${a?"Edit Aktivitas":"Input Aktivitas Baru"}</h3>
+  <div class="formgrid">
+   <div class="field">
+    <label>Tanggal</label>
+    <input type="date" id="formDate" value="${esc(a?.date||today())}">
+   </div>
+   <div class="field">
+    <label>Jenis Aktivitas</label>
+    <select id="formType">
+     <option value="Inbound" ${a?.type==="Inbound"?"selected":""}>Inbound</option>
+     <option value="Outbound" ${a?.type==="Outbound"?"selected":""}>Outbound</option>
+    </select>
+   </div>
+   <div class="field">
+    <label>Loader</label>
+    <input value="${currentUser.toUpperCase()}" disabled>
+   </div>
+   <div class="field">
+    <label>No Mobil / Container</label>
+    <input id="formNumber" value="${esc(a?.number||"")}" placeholder="B 9123 XYZ / BSIU8021455">
+   </div>
+   <div class="field">
+    <label>Total Qty Carton</label>
+    <input type="number" min="0" step="1" id="formQty" value="${a?.qty??""}">
+   </div>
+  </div>
+  <p class="muted">Loader boleh menginput beberapa aktivitas per hari dengan nomor kendaraan/container yang berbeda.</p>
+  <div class="actions">
+   <button class="btn green" onclick="saveActivity()">Simpan Aktivitas</button>
+   <button class="btn gray" onclick="renderActivities()">Batal</button>
+  </div>
+ </section>`;
+
+ document.getElementById("activityForm").scrollIntoView({behavior:"smooth"});
+}
+
+function editActivity(id){
+ if(!isLoader())return;
+ const a=db.activities.find(x=>x.id===id);
+ if(!a)return;
+
+ if(a.loader!==currentUser){
+  alert("Akses ditolak. Data ini milik Loader lain.");
+  return;
+ }
+
+ openActivityForm(id);
+}
+
+function saveActivity(){
+ if(!isLoader()){
+  alert("Akses ditolak.");
+  return;
+ }
+
+ const id=editingId;
+ const date=document.getElementById("formDate").value;
+ const type=document.getElementById("formType").value;
+ const number=document.getElementById("formNumber").value.trim().toUpperCase();
+ const raw=document.getElementById("formQty").value;
+ const qty=Number(raw);
+
+ if(!date||!number||raw===""||!Number.isSafeInteger(qty)||qty<0){
+  alert("Lengkapi tanggal, nomor, dan qty carton dengan benar.");
+  return;
+ }
+
+ const existing=id?db.activities.find(a=>a.id===id):null;
+
+ if(id&&!existing)return alert("Aktivitas tidak ditemukan.");
+
+ if(existing&&existing.loader!==currentUser){
+  return alert("Kamu tidak memiliki hak untuk mengedit data ini.");
+ }
+
+ const duplicate=db.activities.find(a=>
+  a.id!==id&&
+  a.date===date&&
+  a.type===type&&
+  norm(a.number)===norm(number)
+ );
+
+ if(duplicate){
+  alert("NOMOR DUPLIKAT!\nNomor mobil/container ini sudah tercatat pada tanggal dan jenis aktivitas yang sama oleh "+duplicate.loader.toUpperCase()+".");
+  return;
+ }
+
+ const record={
+  id:id||uid(),
+  date,type,number,qty,
+  loader:currentUser,
+  createdAt:existing?.createdAt||new Date().toISOString(),
+  updatedAt:new Date().toISOString()
+ };
+
+ if(existing){
+  db.activities=db.activities.map(a=>a.id===id?record:a);
+  logAction("EDIT AKTIVITAS",date+" | "+type+" | "+number+" | "+qty+" carton");
+ }else{
+  db.activities.push(record);
+  logAction("INPUT AKTIVITAS",date+" | "+type+" | "+number+" | "+qty+" carton");
+ }
+
+ saveDB();
+ editingId=null;
+
+ alert("Aktivitas berhasil disimpan. Status validasi otomatis diperbarui.");
+ renderActivities();
+}
+
+function deleteActivity(id){
+ if(!isLoader()){
+  alert("Hanya Loader yang boleh menghapus aktivitas.");
+  return;
+ }
+
+ const a=db.activities.find(x=>x.id===id);
+ if(!a)return;
+
+ if(a.loader!==currentUser){
+  alert("Akses ditolak. Kamu hanya dapat menghapus aktivitas milik sendiri.");
+  return;
+ }
+
+ if(!confirm("Yakin ingin menghapus aktivitas ini?"))return;
+
+ db.activities=db.activities.filter(x=>x.id!==id);
+
+ logAction("HAPUS AKTIVITAS",a.date+" | "+a.type+" | "+a.number);
+
+ saveDB();
+ editingId=null;
+ renderActivities();
+}
+
+/* ==================================
+   LAPORAN
+================================== */
+
+function renderReports(){
+ if(!isManager())return navigate("dashboard");
+
+ const rows=db.activities.filter(a=>
+  a.date>=dash.start&&a.date<=dash.end&&
+  (dash.loader==="all"||a.loader===dash.loader)
+ );
+
+ const sum=arr=>arr.reduce((s,a)=>s+Number(a.qty),0);
+
+ document.getElementById("content").innerHTML=`
+ <section class="panel">
+  <div class="toolbar">
+   <div>
+    <h3>Laporan Operasional</h3>
+    <p class="muted">Menggunakan periode dan filter Loader dari Dashboard.</p>
+   </div>
+   <div class="actions">
+    <button class="btn green" onclick="exportReport()">Ekspor CSV</button>
+    <button class="btn gray" onclick="window.print()">Cetak / PDF</button>
+   </div>
+  </div>
+  <p>Periode: ${dateFmt(dash.start)} sampai ${dateFmt(dash.end)}</p>
+  <div class="cards">
+   ${kpi("Total Aktivitas",rows.length,"Transaksi")}
+   ${kpi("Total Carton",sum(rows),"Input Loader")}
+   ${kpi("Inbound",sum(rows.filter(a=>a.type==="Inbound")),"Carton")}
+   ${kpi("Outbound",sum(rows.filter(a=>a.type==="Outbound")),"Carton")}
+  </div>
+  ${activityTable(rows,false)}
+ </section>`;
 }
 
 function exportReport(){
-  const rows=getDashboardRows();
-  downloadCSV("laporan_loaderops.csv",
-    ["tanggal","loader","jenis","nomor","qty_loader",
-     "qty_master","selisih","status"],
-    rows.map(a=>{
-      const v=getValidation(a);
-      return [
-        a.date,a.loader,a.type,a.number,a.qty,
-        v.masterQty??"",v.difference??"",v.status
-      ];
-    }));
+ const rows=db.activities.filter(a=>
+  a.date>=dash.start&&a.date<=dash.end&&
+  (dash.loader==="all"||a.loader===dash.loader)
+ );
+
+ downloadCSV("laporan_loaderops.csv",
+ ["tanggal","loader","jenis","nomor","qty_loader","qty_master","selisih","status"],
+ rows.map(a=>{
+  const v=getValidation(a);
+  return [a.date,a.loader,a.type,a.number,a.qty,v.masterQty??"",v.difference??"",v.status];
+ }));
 }
+
+/* ==================================
+   AUDIT LOG
+================================== */
 
 function renderAudit(){
-  if(!isManager())return navigate("dashboard");
+ if(!isManager())return navigate("dashboard");
 
-  document.getElementById("content").innerHTML=`
-    <div class="panel">
-      <h3>🕒 Audit Log</h3>
-      ${db.audit.length?`<div class="table-wrap"><table>
-        <thead><tr><th>Waktu</th><th>User</th><th>Aksi</th><th>Detail</th></tr></thead>
-        <tbody>${db.audit.map(x=>`<tr>
-          <td>${esc(x.at)}</td>
-          <td>${esc(x.user)}</td>
-          <td>${esc(x.action)}</td>
-          <td>${esc(x.detail)}</td>
-        </tr>`).join("")}</tbody>
-      </table></div>`:'<p class="muted">Belum ada riwayat aktivitas.</p>'}
-    </div>`;
+ document.getElementById("content").innerHTML=`
+ <section class="panel">
+  <h3>Audit Log</h3>
+  <p class="muted">Riwayat input, edit, hapus, dan upload master.</p>
+  ${db.audit.length?`
+  <div class="tablewrap"><table>
+   <thead><tr><th>Waktu</th><th>User</th><th>Aksi</th><th>Detail</th></tr></thead>
+   <tbody>
+   ${db.audit.map(a=>`
+    <tr>
+     <td>${esc(a.time)}</td>
+     <td>${esc(a.user)}</td>
+     <td>${esc(a.action)}</td>
+     <td>${esc(a.detail)}</td>
+    </tr>`).join("")}
+   </tbody>
+  </table></div>`:'<p class="muted">Belum ada riwayat.</p>'}
+ </section>`;
 }
 
+/* ==================================
+   SINKRONISASI ANTAR TAB BROWSER
+================================== */
+
 window.addEventListener("storage",event=>{
-  if(event.key===STORAGE_KEY){
-    db=loadDatabase();
-    if(currentUser)render();
-  }
+ if(event.key===STORAGE_KEY){
+  db=loadDB();
+  if(currentUser)render();
+ }
 });
 
-if(USERS.includes(currentUser))showApp();
+/* ==================================
+   START APPLICATION
+================================== */
+
+if(USERS.includes(currentUser)){
+ showApp();
+}else{
+ sessionStorage.removeItem("loaderops_user");
+}
 </script>
 </body>
 </html>
