@@ -1,34 +1,1312 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#12345a">
+<title>LoaderOPS - Warehouse Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+<style>
+:root {
+  font-family: Arial, sans-serif;
+  color: #26384b;
+  background: #f3f6fa;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+button,input,select { font: inherit; }
+button { cursor: pointer; }
+.hidden { display:none!important; }
+
+.btn {
+  border:0;
+  border-radius:8px;
+  padding:10px 14px;
+  background:#1769aa;
+  color:white;
+  font-weight:bold;
+}
+.green { background:#16815e; }
+.red { background:#c43d49; }
+.gray { background:#64748b; }
+.light { background:#e8eff7;color:#23466a; }
+
+.login {
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:20px;
+  background:linear-gradient(135deg,#12345a,#2674b7);
+}
+.loginbox {
+  background:white;
+  width:min(420px,100%);
+  padding:32px;
+  border-radius:17px;
+  box-shadow:0 15px 40px #0003;
+}
+.loginbox h1 { color:#1769aa;margin:0; }
+.loginbox p { color:#718096; }
+
+header {
+  background:#12345a;
+  color:white;
+  padding:17px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+header h2 { margin:0; }
+header small { color:#d5e4f3; }
+
+nav {
+  display:flex;
+  gap:8px;
+  padding:12px 20px;
+  background:white;
+  border-bottom:1px solid #e1e8ef;
+  flex-wrap:wrap;
+}
+nav button {
+  border:0;
+  background:#edf3f9;
+  color:#31516e;
+  border-radius:8px;
+  padding:10px 14px;
+  font-weight:bold;
+}
+nav button.active { background:#1769aa;color:white; }
+
+main {
+  max-width:1400px;
+  margin:auto;
+  padding:22px;
+}
+.panel {
+  background:white;
+  border:1px solid #e1e8f0;
+  border-radius:13px;
+  padding:20px;
+  margin-bottom:18px;
+  box-shadow:0 2px 10px #193c6008;
+}
+.panel h3 { margin:0 0 15px;color:#173d67; }
+
+.muted { font-size:13px;color:#718096;line-height:1.5; }
+.notice {
+  padding:12px;
+  border-radius:8px;
+  background:#eaf3fc;
+  color:#315a81;
+  font-size:13px;
+  margin-bottom:15px;
+}
+.field { margin-bottom:13px; }
+label {
+  display:block;
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:6px;
+}
+input,select {
+  width:100%;
+  padding:10px;
+  border:1px solid #ccd7e3;
+  border-radius:8px;
+  background:white;
+}
+.cards {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:13px;
+  margin-bottom:18px;
+}
+.kpi {
+  background:white;
+  border:1px solid #e0e8f0;
+  border-radius:12px;
+  padding:17px;
+}
+.kpi .name { font-size:13px;color:#718096; }
+.kpi .value {
+  font-size:27px;
+  font-weight:800;
+  color:#173d67;
+  margin-top:8px;
+}
+.kpi .sub { font-size:12px;color:#8794a3;margin-top:5px; }
+
+.filters,.formgrid {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+  align-items:end;
+}
+.formgrid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+
+.tablewrap { overflow-x:auto; }
+table { border-collapse:collapse;width:100%;font-size:13px; }
+th,td {
+  text-align:left;
+  padding:11px;
+  border-bottom:1px solid #e7edf4;
+  white-space:nowrap;
+}
+th { background:#f0f5fa;color:#456079; }
+tr:hover td { background:#fafcff; }
+
+.tag {
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:30px;
+  font-size:12px;
+  font-weight:bold;
+}
+.ok { background:#def6e8;color:#12643c; }
+.bad { background:#ffe4e4;color:#a32935; }
+.wait { background:#fff1cd;color:#8b6500; }
+
+.toolbar {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:15px;
+}
+.actions { display:flex;gap:7px; }
+.actions .btn { padding:7px 10px;font-size:12px; }
+
+.chartrow {
+  display:grid;
+  grid-template-columns:110px 1fr 75px;
+  gap:12px;
+  align-items:center;
+  margin:12px 0;
+}
+.track {
+  height:14px;
+  background:#edf1f7;
+  border-radius:20px;
+  overflow:hidden;
+}
+.bar { height:100%;border-radius:20px; }
+.blue { background:#287bd1; }
+.orange { background:#f5a23a; }
+.legend { display:flex;gap:18px;font-size:13px; }
+.dot {
+  display:inline-block;
+  width:10px;height:10px;
+  border-radius:3px;
+  margin-right:5px;
+}
+hr {
+  border:0;
+  border-top:1px solid #e7edf4;
+  margin:18px 0;
+}
+.toast {
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  max-width:360px;
+  padding:14px 18px;
+  border-radius:9px;
+  background:#173d67;
+  color:white;
+  z-index:99;
+  box-shadow:0 5px 20px #0003;
+}
+.statusline { font-size:12px;color:#d5e4f3;margin-top:4px; }
+
+@media(max-width:900px) {
+  .cards { grid-template-columns:repeat(2,1fr); }
+  .filters,.formgrid { grid-template-columns:repeat(2,1fr); }
+}
+@media(max-width:520px) {
+  main { padding:12px; }
+  .cards,.filters,.formgrid { grid-template-columns:1fr; }
+  .chartrow { grid-template-columns:75px 1fr 65px; }
+}
+@media print {
+  header,nav,.no-print { display:none!important; }
+  main { padding:0; }
+  .panel,.kpi { box-shadow:none; }
+}
+</style>
+</head>
+
+<body>
+
+<section id="loginPage" class="login">
+  <div class="loginbox">
+    <h1>📦 LOADEROPS</h1>
+    <p>Warehouse Operational Monitoring System</p>
+
+    <div class="notice">
+      Supabase Connected Warehouse System
+    </div>
+
+    <div class="field">
+      <label>Email</label>
+      <input id="loginEmail" type="email"
+        placeholder="Masukkan email Supabase"
+        autocomplete="username">
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <input id="loginPass" type="password"
+        placeholder="Masukkan password"
+        autocomplete="current-password">
+    </div>
+
+    <button class="btn" style="width:100%" onclick="login()">
+      LOGIN
+    </button>
+    <p id="loginError" style="color:#b91c1c"></p>
+  </div>
+</section>
+
+<section id="appPage" class="hidden">
+  <header>
+    <div>
+      <h2>📦 LOADEROPS</h2>
+      <small>Warehouse Operational Monitoring System</small>
+      <div class="statusline" id="syncStatus">Connecting...</div>
+    </div>
+    <div>
+      <span id="userLabel"></span>
+      <button class="btn light" onclick="refreshData()">Refresh</button>
+      <button class="btn gray" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <nav id="navigation"></nav>
+  <main id="content"></main>
+</section>
+
+<div id="toast" class="toast hidden"></div>
+
+<script>
+"use strict";
+
 /* ================================================
-   11. MASTER CSV UPLOAD
+   1. SUPABASE CONFIGURATION
+================================================ */
+
+const SUPABASE_URL =
+  "https://rumtkbyswizttypfrgqg.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_u7km6UiSDYSaRtRftTholg_wDAuodyk";
+
+const sb = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+/* ================================================
+   2. APPLICATION STATE
+================================================ */
+
+let authUser = null;
+let profile = null;
+let currentPage = "dashboard";
+
+let inbound = [];
+let outbound = [];
+let master = [];
+let uploads = [];
+let audit = [];
+let profiles = [];
+let masterIndex = new Map();
+
+let editing = null;
+let realtimeChannel = null;
+let realtimeRefreshTimer = null;
+let isInitializing = false;
+
+let dash = {
+  start: today(),
+  end: today(),
+  loader: "all"
+};
+
+let actFilter = {
+  type: "all",
+  start: "",
+  end: ""
+};
+
+/* ================================================
+   3. BASIC FUNCTIONS
+================================================ */
+
+function today() {
+  const d = new Date();
+  return d.getFullYear()+"-"+
+    String(d.getMonth()+1).padStart(2,"0")+"-"+
+    String(d.getDate()).padStart(2,"0");
+}
+
+function esc(v) {
+  return String(v??"").replace(/[&<>"']/g,c=>({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  })[c]);
+}
+
+function fmt(v) {
+  return Number(v||0).toLocaleString("id-ID");
+}
+
+function dateFmt(v) {
+  if(!v)return "-";
+  const p=String(v).split("-");
+  return p.length===3?p[2]+"/"+p[1]+"/"+p[0]:v;
+}
+
+function norm(v) {
+  return String(v||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+}
+
+function normalizeType(v) {
+  const x=String(v||"").trim().toLowerCase();
+  if(["inbound","in","ib"].includes(x))return "INBOUND";
+  if(["outbound","out","ob"].includes(x))return "OUTBOUND";
+  return "";
+}
+
+function databaseActivityType(v) {
+  const type=normalizeType(v);
+  if(type==="INBOUND")return "Inbound";
+  if(type==="OUTBOUND")return "Outbound";
+  return null;
+}
+
+function notify(message) {
+  const el=document.getElementById("toast");
+  el.textContent=message;
+  el.classList.remove("hidden");
+  setTimeout(()=>el.classList.add("hidden"),3500);
+}
+
+function setSync(message) {
+  document.getElementById("syncStatus").textContent=message;
+}
+
+function isAdmin() {
+  return profile?.role==="admin";
+}
+
+function isSPV() {
+  return profile?.role==="spv";
+}
+
+function isLoader() {
+  return profile?.role==="loader";
+}
+
+function isManager() {
+  return isAdmin()||isSPV();
+}
+
+function loaderName(id) {
+  const p=profiles.find(x=>x.id===id);
+  return p?.full_name||p?.username||"Loader";
+}
+
+function allowedPages() {
+  if(isAdmin())
+    return ["dashboard","master","activities","reports","audit"];
+
+  if(isSPV())
+    return ["dashboard","activities","reports","audit"];
+
+  if(isLoader())
+    return ["activities"];
+
+  return [];
+}
+
+/* ================================================
+   4. AUTHENTICATION
+================================================ */
+
+async function login() {
+  const email=document.getElementById("loginEmail").value.trim();
+  const password=document.getElementById("loginPass").value;
+
+  const error=document.getElementById("loginError");
+  error.textContent="";
+
+  if(!email||!password) {
+    error.textContent="Email dan password wajib diisi.";
+    return;
+  }
+
+  try {
+    const {data,error:err}=await sb.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if(err)throw err;
+
+    authUser=data.user;
+    await initializeApp();
+
+  } catch(e) {
+    error.textContent=e.message;
+  }
+}
+
+async function logout() {
+  if(realtimeRefreshTimer) {
+    clearTimeout(realtimeRefreshTimer);
+    realtimeRefreshTimer=null;
+  }
+  if(realtimeChannel) {
+    await sb.removeChannel(realtimeChannel);
+    realtimeChannel=null;
+  }
+
+  await sb.auth.signOut();
+
+  authUser=null;
+  profile=null;
+
+  document.getElementById("appPage").classList.add("hidden");
+  document.getElementById("loginPage").classList.remove("hidden");
+  document.getElementById("loginPass").value="";
+}
+
+async function initializeApp() {
+  if(isInitializing)return;
+  isInitializing=true;
+
+  try {
+    const {data,error}=await sb
+      .from("profiles")
+      .select("*")
+      .eq("id",authUser.id)
+      .single();
+
+    if(error)throw error;
+
+    profile=data;
+
+    if(!profile.is_active) {
+      await logout();
+      throw new Error("Akun tidak aktif. Hubungi Administrator.");
+    }
+
+    document.getElementById("loginPage").classList.add("hidden");
+    document.getElementById("appPage").classList.remove("hidden");
+
+    document.getElementById("userLabel").textContent=
+      profile.full_name+" | "+profile.role.toUpperCase();
+
+    await loadAll();
+
+    if(isLoader()) {
+      navigate("activities");
+    } else {
+      navigate("dashboard");
+    }
+
+    setupRealtime();
+  } finally {
+    isInitializing=false;
+  }
+}
+
+sb.auth.onAuthStateChange((event)=>{
+  if(event==="SIGNED_OUT") {
+    if(realtimeChannel) {
+      sb.removeChannel(realtimeChannel);
+      realtimeChannel=null;
+    }
+    authUser=null;
+    profile=null;
+    document.getElementById("appPage").classList.add("hidden");
+    document.getElementById("loginPage").classList.remove("hidden");
+    document.getElementById("loginPass").value="";
+  }
+});/* ================================================
+   5. LOAD DATABASE
+================================================ */
+
+async function fetchAllRows(queryFactory,pageSize=1000) {
+  const rows=[];
+  for(let offset=0;;offset+=pageSize) {
+    const {data,error}=await queryFactory().range(offset,offset+pageSize-1);
+    if(error) throw error;
+    const page=data||[];
+    rows.push(...page);
+    if(page.length<pageSize) break;
+  }
+  return rows;
+}
+
+async function loadAll() {
+  setSync("Loading database...");
+
+  const manager=isManager();
+  const loaderOnly=isLoader();
+
+  const profileTask=manager
+    ? fetchAllRows(()=>sb.from("profiles")
+        .select("id,full_name,username,role,is_active")
+        .order("full_name",{ascending:true}))
+    : Promise.resolve([profile]);
+
+  const inboundTask=fetchAllRows(()=>{
+    let q=sb.from("inbound_activities").select("*")
+      .order("activity_date",{ascending:false});
+    if(loaderOnly) q=q.eq("loader_id",authUser.id);
+    return q;
+  });
+
+  const outboundTask=fetchAllRows(()=>{
+    let q=sb.from("outbound_activities").select("*")
+      .order("activity_date",{ascending:false});
+    if(loaderOnly) q=q.eq("loader_id",authUser.id);
+    return q;
+  });
+
+  const masterTask=fetchAllRows(()=>sb.from("excel_reference_rows")
+    .select("id,activity_date,activity_type,vehicle_number,container_number,total_carton")
+    .order("activity_date",{ascending:false}));
+
+  const uploadsTask=isAdmin()
+    ? fetchAllRows(()=>sb.from("excel_uploads").select("*")
+        .order("created_at",{ascending:false}))
+    : Promise.resolve([]);
+
+  const [profileRows,inRows,outRows,masterRows,uploadRows]=await Promise.all([
+    profileTask,inboundTask,outboundTask,masterTask,uploadsTask
+  ]);
+
+  profiles=profileRows||[];
+  inbound=inRows||[];
+  outbound=outRows||[];
+  master=masterRows||[];
+  uploads=uploadRows||[];
+  rebuildMasterIndex();
+
+  if(manager) {
+    const {data,error}=await sb.from("audit_logs")
+      .select("*")
+      .order("created_at",{ascending:false})
+      .limit(500);
+    if(!error) audit=data||[];
+    else audit=[];
+  } else {
+    audit=[];
+  }
+
+  setSync("● Connected to Supabase");
+}
+
+async function refreshData() {
+  try {
+    await loadAll();
+    render();
+  } catch(e) {
+    console.error(e);
+    notify("Gagal refresh: "+e.message);
+  }
+}
+
+/* ================================================
+   6. REALTIME
+================================================ */
+
+function scheduleRealtimeRefresh() {
+  if(realtimeRefreshTimer)clearTimeout(realtimeRefreshTimer);
+  realtimeRefreshTimer=setTimeout(()=>{
+    realtimeRefreshTimer=null;
+    refreshData();
+  },700);
+}
+
+function setupRealtime() {
+  if(realtimeChannel) {
+    sb.removeChannel(realtimeChannel);
+    realtimeChannel=null;
+  }
+
+  realtimeChannel=sb.channel("loaderops-live-"+authUser.id);
+
+  const realtimeTables=isManager()
+    ? ["inbound_activities","outbound_activities","excel_reference_rows",
+       "excel_uploads","profiles","audit_logs"]
+    : ["inbound_activities","outbound_activities","excel_reference_rows"];
+
+  realtimeTables.forEach(table=>{
+    realtimeChannel.on(
+      "postgres_changes",
+      {event:"*",schema:"public",table},
+      scheduleRealtimeRefresh
+    );
+  });
+
+  realtimeChannel.subscribe(status=>{
+    if(status==="SUBSCRIBED") {
+      setSync("● Realtime connected — perubahan perangkat lain aktif");
+    } else if(status==="CHANNEL_ERROR"||status==="TIMED_OUT") {
+      setSync("Realtime terputus — gunakan tombol Refresh");
+      console.warn("Supabase Realtime status:",status);
+    } else if(status==="CLOSED") {
+      setSync("Realtime tidak aktif");
+    }
+  });
+}
+
+/* ================================================
+   7. NAVIGATION
+================================================ */
+
+function navigate(page) {
+  if(!allowedPages().includes(page))
+    page=isLoader()?"activities":"dashboard";
+
+  currentPage=page;
+
+  const labels={
+    dashboard:"📊 Dashboard",
+    master:"📁 Upload Master Data",
+    activities:"📋 Aktivitas Loader",
+    reports:"📈 Laporan",
+    audit:"🕒 Audit Log"
+  };
+
+  document.getElementById("navigation").innerHTML=
+    allowedPages().map(p=>`
+      <button class="${p===page?"active":""}"
+        onclick="navigate('${p}')">
+        ${labels[p]}
+      </button>
+    `).join("");
+
+  render();
+}
+
+function render() {
+  if(currentPage==="dashboard")renderDashboard();
+  if(currentPage==="master")renderMaster();
+  if(currentPage==="activities")renderActivities();
+  if(currentPage==="reports")renderReports();
+  if(currentPage==="audit")renderAudit();
+}
+
+/* ================================================
+   8. MASTER VALIDATION
+================================================ */
+
+function activityType(row) {
+  return normalizeType(row.activity_type);
+}
+
+function masterKey(type,date,number) {
+  return [date,type,norm(number)].join("|");
+}
+
+function rebuildMasterIndex() {
+  masterIndex = new Map();
+  for(const row of master) {
+    const type=activityType(row);
+    const number=type==="INBOUND"
+      ? row.vehicle_number
+      : (row.container_number||row.vehicle_number);
+    if(!type || !row.activity_date || !number) continue;
+
+    const key=masterKey(type,row.activity_date,number);
+    const existing=masterIndex.get(key);
+    if(existing) {
+      existing.total_carton=Number(existing.total_carton||0)+Number(row.total_carton||0);
+    } else {
+      masterIndex.set(key,{...row,total_carton:Number(row.total_carton||0)});
+    }
+  }
+}
+
+function masterMatches(type,date,number) {
+  const match=masterIndex.get(masterKey(type,date,number));
+  return match?[match]:[];
+}
+
+function validateActivity(type,row) {
+  const number=type==="INBOUND"
+    ? row.vehicle_number
+    : row.container_number;
+
+  const matches=masterMatches(
+    type,row.activity_date,number
+  );
+
+  if(!matches.length) {
+    return {
+      status:"Belum Dicocokkan",
+      qty:null,
+      difference:null,
+      match:null
+    };
+  }
+
+  const expected=matches.reduce(
+    (s,m)=>s+Number(m.total_carton||0),0
+  );
+
+  const difference=Number(row.total_carton)-expected;
+
+  return {
+    status:difference===0?"Sesuai":"Tidak Sesuai",
+    qty:expected,
+    difference,
+    match:matches[0]
+  };
+}
+
+function tag(status) {
+  const cls=status==="Sesuai"?"ok":
+    status==="Tidak Sesuai"?"bad":"wait";
+
+  return `<span class="tag ${cls}">${esc(status)}</span>`;
+}
+
+function allActivities() {
+  const a=inbound.map(x=>({
+    ...x,type:"INBOUND",
+    number:x.vehicle_number
+  }));
+
+  const b=outbound.map(x=>({
+    ...x,type:"OUTBOUND",
+    number:x.container_number
+  }));
+
+  return [...a,...b].sort((x,y)=>
+    y.activity_date.localeCompare(x.activity_date)
+  );
+}
+
+function visibleActivities() {
+  let rows=allActivities();
+
+  if(isLoader())
+    rows=rows.filter(x=>x.loader_id===authUser.id);
+
+  if(actFilter.type!=="all")
+    rows=rows.filter(x=>x.type===actFilter.type);
+
+  if(actFilter.start)
+    rows=rows.filter(x=>x.activity_date>=actFilter.start);
+
+  if(actFilter.end)
+    rows=rows.filter(x=>x.activity_date<=actFilter.end);
+
+  return rows;
+}
+
+/* ================================================
+   9. DASHBOARD
+================================================ */
+
+function kpi(name,value,sub) {
+  return `
+    <div class="kpi">
+      <div class="name">${esc(name)}</div>
+      <div class="value">${fmt(value)}</div>
+      <div class="sub">${esc(sub)}</div>
+    </div>
+  `;
+}
+
+function renderDashboard() {
+  if(!isManager())return;
+
+  let rows=allActivities().filter(a=>
+    a.activity_date>=dash.start&&
+    a.activity_date<=dash.end
+  );
+
+  if(dash.loader!=="all")
+    rows=rows.filter(a=>a.loader_id===dash.loader);
+
+  const total=rows.reduce((s,a)=>s+Number(a.total_carton),0);
+  const ins=rows.filter(a=>a.type==="INBOUND");
+  const outs=rows.filter(a=>a.type==="OUTBOUND");
+
+  const valid=rows.filter(a=>
+    validateActivity(a.type,a).status==="Sesuai"
+  ).length;
+
+  const invalid=rows.filter(a=>
+    validateActivity(a.type,a).status==="Tidak Sesuai"
+  ).length;
+
+  const pending=rows.length-valid-invalid;
+
+  const loaderIds=[...new Set(rows.map(a=>a.loader_id))];
+
+  document.getElementById("content").innerHTML=`
+    <section class="panel">
+      <h3>Dashboard Operasional</h3>
+
+      <div class="filters no-print">
+        <div class="field">
+          <label>Tanggal Mulai</label>
+          <input type="date" id="dashStart" value="${dash.start}">
+        </div>
+        <div class="field">
+          <label>Tanggal Akhir</label>
+          <input type="date" id="dashEnd" value="${dash.end}">
+        </div>
+        <div class="field">
+          <label>Loader</label>
+          <select id="dashLoader">
+            <option value="all">Semua Loader</option>
+            ${profiles.filter(p=>p.role==="loader").map(p=>`
+              <option value="${p.id}" ${dash.loader===p.id?"selected":""}>
+                ${esc(p.full_name)}
+              </option>
+            `).join("")}
+          </select>
+        </div>
+        <div class="field">
+          <button class="btn" onclick="applyDash()">Terapkan Filter</button>
+        </div>
+      </div>
+
+      <p class="muted">
+        Periode ${dateFmt(dash.start)} sampai ${dateFmt(dash.end)}
+      </p>
+    </section>
+
+    <div class="cards">
+      ${kpi("Total Aktivitas",rows.length,"Transaksi")}
+      ${kpi("Total Carton",total,"Carton")}
+      ${kpi("Inbound",ins.reduce((s,a)=>s+Number(a.total_carton),0),"Carton")}
+      ${kpi("Outbound",outs.reduce((s,a)=>s+Number(a.total_carton),0),"Carton")}
+    </div>
+
+    <div class="cards">
+      ${kpi("Sesuai Master",valid,"Transaksi")}
+      ${kpi("Tidak Sesuai",invalid,"Perlu pemeriksaan")}
+      ${kpi("Belum Dicocokkan",pending,"Belum ada referensi")}
+      ${kpi("Master Data",master.length,"Baris referensi")}
+    </div>
+
+    <section class="panel">
+      <h3>Performa Carton per Loader</h3>
+      <div class="legend">
+        <span><i class="dot blue"></i>Inbound</span>
+        <span><i class="dot orange"></i>Outbound</span>
+      </div>
+      ${loaderIds.length?loaderIds.map(id=>{
+        const name=loaderName(id);
+        const iv=rows.filter(a=>a.loader_id===id&&a.type==="INBOUND")
+          .reduce((s,a)=>s+Number(a.total_carton),0);
+        const ov=rows.filter(a=>a.loader_id===id&&a.type==="OUTBOUND")
+          .reduce((s,a)=>s+Number(a.total_carton),0);
+        const max=Math.max(iv,ov,1);
+
+        return `
+          <div style="margin-top:20px">
+            <b>${esc(name)}</b>
+            <div class="chartrow">
+              <span>Inbound</span>
+              <div class="track"><div class="bar blue" style="width:${iv/max*100}%"></div></div>
+              <b>${fmt(iv)}</b>
+            </div>
+            <div class="chartrow">
+              <span>Outbound</span>
+              <div class="track"><div class="bar orange" style="width:${ov/max*100}%"></div></div>
+              <b>${fmt(ov)}</b>
+            </div>
+          </div>
+        `;
+      }).join(""):'<p class="muted">Belum ada aktivitas.</p>'}
+    </section>
+
+    <section class="panel">
+      <h3>Aktivitas Terbaru</h3>
+      ${activityTable(rows.slice(0,30))}
+    </section>
+  `;
+}
+
+function applyDash() {
+  dash.start=document.getElementById("dashStart").value;
+  dash.end=document.getElementById("dashEnd").value;
+  dash.loader=document.getElementById("dashLoader").value;
+
+  if(dash.start>dash.end) {
+    notify("Tanggal mulai tidak boleh melewati tanggal akhir.");
+    return;
+  }
+  renderDashboard();
+}/* ================================================
+   10. ACTIVITY TABLE
+================================================ */
+
+function activityTable(rows) {
+  if(!rows.length)
+    return '<p class="muted">Belum ada aktivitas.</p>';
+
+  return `
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Loader</th>
+            <th>Jenis</th>
+            <th>No Mobil/Container</th>
+            <th>Qty Loader</th>
+            <th>Qty Master</th>
+            <th>Selisih</th>
+            <th>Status</th>
+            ${currentPage==="activities"?"<th>Aksi</th>":""}
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(a=>{
+            const v=validateActivity(a.type,a);
+            const own=a.loader_id===authUser.id;
+            const canEdit=isAdmin()||(
+              isLoader()&&own&&
+              a.reconciliation_status==="Belum Dicocokkan"
+            );
+
+            const canDelete=isAdmin()||(
+              isLoader()&&own&&
+              a.reconciliation_status==="Belum Dicocokkan"
+            );
+
+            return `
+              <tr>
+                <td>${dateFmt(a.activity_date)}</td>
+                <td>${esc(loaderName(a.loader_id))}</td>
+                <td>${a.type}</td>
+                <td>${esc(a.number)}</td>
+                <td>${fmt(a.total_carton)}</td>
+                <td>${v.qty===null?"-":fmt(v.qty)}</td>
+                <td>${v.difference===null?"-":fmt(v.difference)}</td>
+                <td>${tag(v.status)}</td>
+                ${currentPage==="activities"?`
+                  <td>
+                    <div class="actions">
+                      ${canEdit?`<button class="btn light" onclick="editActivity('${a.id}','${a.type}')">Edit</button>`:""}
+                      ${canDelete?`<button class="btn red" onclick="deleteActivity('${a.id}','${a.type}')">Hapus</button>`:""}
+                    </div>
+                  </td>
+                `:""}
+              </tr>
+            `;
+          }).join("")}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* ================================================
+   11. ACTIVITY INPUT / EDIT
+================================================ */
+
+function renderActivities() {
+  const rows=visibleActivities();
+
+  document.getElementById("content").innerHTML=`
+    <section class="panel">
+      <h3>${editing?"Edit Aktivitas Loader":"Input Aktivitas Loader"}</h3>
+
+      <div class="notice">
+        Setiap Loader dapat mengerjakan banyak inbound dan outbound
+        dengan nomor mobil atau container berbeda.
+        Setiap transaksi disimpan terpisah.
+      </div>
+
+      <form onsubmit="saveActivity(event)">
+        <div class="formgrid">
+          <div class="field">
+            <label>Tanggal</label>
+            <input type="date" id="actDate" required
+              value="${editing?.date||today()}">
+          </div>
+
+          <div class="field">
+            <label>Jenis Aktivitas</label>
+            <select id="actType" onchange="updateNumberLabel()">
+              <option value="INBOUND" ${editing?.type==="INBOUND"?"selected":""}>INBOUND</option>
+              <option value="OUTBOUND" ${editing?.type==="OUTBOUND"?"selected":""}>OUTBOUND</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label id="numberLabel">Nomor Mobil</label>
+            <input id="actNumber" required
+              placeholder="Nomor mobil / container"
+              value="${esc(editing?.number||"")}">
+          </div>
+
+          <div class="field">
+            <label>Total Qty Carton</label>
+            <input id="actQty" type="number" min="0" step="1" required
+              value="${editing?.qty??""}">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Keterangan (opsional)</label>
+          <input id="actNote" placeholder="Keterangan tambahan"
+            value="${esc(editing?.note||"")}">
+        </div>
+
+        <button class="btn green" type="submit">
+          ${editing?"Simpan Perubahan":"Simpan Aktivitas"}
+        </button>
+
+        ${editing?`
+          <button class="btn gray" type="button" onclick="cancelEdit()">
+            Batal Edit
+          </button>
+        `:""}
+      </form>
+    </section>
+
+    <section class="panel">
+      <div class="toolbar">
+        <h3>Riwayat Aktivitas</h3>
+        <button class="btn light" onclick="refreshData()">Refresh</button>
+      </div>
+
+      <div class="filters">
+        <div class="field">
+          <label>Jenis</label>
+          <select id="filterType" onchange="applyActivityFilter()">
+            <option value="all">Semua</option>
+            <option value="INBOUND" ${actFilter.type==="INBOUND"?"selected":""}>Inbound</option>
+            <option value="OUTBOUND" ${actFilter.type==="OUTBOUND"?"selected":""}>Outbound</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Dari Tanggal</label>
+          <input type="date" id="filterStart" value="${actFilter.start}"
+            onchange="applyActivityFilter()">
+        </div>
+        <div class="field">
+          <label>Sampai Tanggal</label>
+          <input type="date" id="filterEnd" value="${actFilter.end}"
+            onchange="applyActivityFilter()">
+        </div>
+      </div>
+
+      ${activityTable(rows)}
+    </section>
+  `;
+
+  updateNumberLabel();
+}
+
+function updateNumberLabel() {
+  const type=document.getElementById("actType")?.value;
+  const label=document.getElementById("numberLabel");
+  if(label)label.textContent=type==="INBOUND"
+    ?"Nomor Mobil":"Nomor Container";
+}
+
+function applyActivityFilter() {
+  actFilter.type=document.getElementById("filterType").value;
+  actFilter.start=document.getElementById("filterStart").value;
+  actFilter.end=document.getElementById("filterEnd").value;
+
+  renderActivities();
+}
+
+function cancelEdit() {
+  editing=null;
+  renderActivities();
+}
+
+function editActivity(id,type) {
+  if(type==="INBOUND") {
+    const a=inbound.find(x=>x.id===id);
+    if(!a)return;
+    if(isLoader()&&a.loader_id!==authUser.id)return;
+    editing={
+      id,type,
+      date:a.activity_date,
+      number:a.vehicle_number,
+      qty:a.total_carton,
+      note:a.reconciliation_note||""
+    };
+  } else {
+    const a=outbound.find(x=>x.id===id);
+    if(!a)return;
+    if(isLoader()&&a.loader_id!==authUser.id)return;
+    editing={
+      id,type,
+      date:a.activity_date,
+      number:a.container_number,
+      qty:a.total_carton,
+      note:a.reconciliation_note||""
+    };
+  }
+
+  renderActivities();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+async function saveActivity(event) {
+  event.preventDefault();
+
+  const date=document.getElementById("actDate").value;
+  const type=document.getElementById("actType").value;
+  const number=document.getElementById("actNumber").value.trim().toUpperCase();
+  const qty=Number(document.getElementById("actQty").value);
+  const note=document.getElementById("actNote").value.trim();
+
+  if(!date||!number||!Number.isSafeInteger(qty)||qty<0) {
+    notify("Data aktivitas tidak valid.");
+    return;
+  }
+
+  const match=masterMatches(type,date,number);
+  const expected=match.reduce((s,m)=>s+Number(m.total_carton),0);
+  const difference=match.length?qty-expected:null;
+  const status=!match.length?"Belum Dicocokkan":
+    difference===0?"Sesuai":"Tidak Sesuai";
+
+  const common={
+    activity_date:date,
+    total_carton:qty,
+    reconciliation_status:status,
+    excel_activity_date:match[0]?.activity_date||null,
+    excel_total_carton:match.length?expected:null,
+    carton_difference:difference,
+    reconciliation_note:note||null,
+    reconciled_by:match.length?authUser.id:null,
+    reconciled_at:match.length?new Date().toISOString():null
+  };
+
+  let table,payload;
+
+  if(type==="INBOUND") {
+    table="inbound_activities";
+    payload={
+      ...common,
+      vehicle_number:number,
+      excel_vehicle_number:match[0]?.vehicle_number||null
+    };
+  } else {
+    table="outbound_activities";
+    payload={
+      ...common,
+      container_number:number,
+      excel_container_number:match[0]?.container_number||null,
+      excel_vehicle_number:match[0]?.vehicle_number||null
+    };
+  }
+
+  try {
+    if(editing) {
+      const original=editing;
+      let query=sb.from(table)
+        .update(payload)
+        .eq("id",original.id);
+
+      if(isLoader()) {
+        query=query.eq("loader_id",authUser.id);
+      }
+
+      const result=await query.select();
+
+      if(result.error)throw result.error;
+      if(!result.data?.length) {
+        throw new Error("Tidak dapat mengedit data. Periksa hak akses atau status aktivitas.");
+      }
+    } else {
+      payload.loader_id=authUser.id;
+
+      const result=await sb.from(table)
+        .insert(payload)
+        .select();
+
+      if(result.error)throw result.error;
+    }
+
+    editing=null;
+    await loadAll();
+    notify("Aktivitas berhasil disimpan.");
+    renderActivities();
+
+  } catch(e) {
+    console.error(e);
+    notify("Gagal menyimpan: "+e.message);
+  }
+}
+
+async function deleteActivity(id,type) {
+  if(!confirm("Yakin ingin menghapus aktivitas ini?"))return;
+
+  try {
+    const table=type==="INBOUND"
+      ?"inbound_activities":"outbound_activities";
+
+    let query=sb.from(table).delete().eq("id",id);
+
+    if(isLoader())
+      query=query.eq("loader_id",authUser.id);
+
+    const {data,error}=await query.select();
+
+    if(error)throw error;
+    if(!data?.length)
+      throw new Error("Tidak dapat menghapus. Data mungkin sudah dikunci atau bukan milikmu.");
+
+    await loadAll();
+    notify("Aktivitas berhasil dihapus.");
+    renderActivities();
+
+  } catch(e) {
+    notify("Gagal menghapus: "+e.message);
+  }
+}
+
+/* ================================================
+   12. MASTER CSV UPLOAD
 ================================================ */
 
 function parseDate(value) {
   if(value===null||value===undefined||value==="")return "";
 
   if(typeof value==="number") {
-    const d=new Date(
-      Date.UTC(1899,11,30)+Math.floor(value)*86400000
-    );
-
+    const d=new Date(Date.UTC(1899,11,30)+Math.floor(value)*86400000);
     return d.toISOString().slice(0,10);
   }
 
   const s=String(value).trim();
 
   let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-
-  if(m) {
-    return `${m[1]}-${m[2].padStart(2,"0")}-${m[3].padStart(2,"0")}`;
-  }
+  if(m)return `${m[1]}-${m[2].padStart(2,"0")}-${m[3].padStart(2,"0")}`;
 
   m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-
-  if(m) {
-    return `${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`;
-  }
+  if(m)return `${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`;
 
   const d=new Date(s);
-
   if(!isNaN(d)) {
     return d.getFullYear()+"-"+
       String(d.getMonth()+1).padStart(2,"0")+"-"+
@@ -42,172 +1320,92 @@ function headerIndex(headers,aliases) {
   return headers.findIndex(h=>aliases.includes(
     String(h).toLowerCase().trim().replace(/[\s_-]+/g,"")
   ));
-}
-
-async function uploadMaster() {
+}async function uploadMaster() {
   if(!isAdmin())return;
 
   const file=document.getElementById("masterFile").files[0];
   const mode=document.getElementById("masterMode").value;
 
-  if(!file) {
-    return notify("Pilih file CSV terlebih dahulu.");
-  }
+  if(!file)return notify("Pilih file CSV terlebih dahulu.");
 
   try {
-
     const parsed=Papa.parse(await file.text(),{
       header:true,
       skipEmptyLines:true,
       transformHeader:h=>h.trim()
     });
 
-    if(parsed.errors.length) {
+    if(parsed.errors.length)
       throw new Error(parsed.errors[0].message);
-    }
 
     const rows=parsed.data;
-
-    if(!rows.length) {
-      throw new Error("File tidak memiliki data.");
-    }
+    if(!rows.length)throw new Error("File tidak memiliki data.");
 
     const headers=Object.keys(rows[0]);
 
     const di=headerIndex(headers,["tanggal","date"]);
+    const ti=headerIndex(headers,["jenis","type","aktivitas","jenisaktivitas"]);
+    const ni=headerIndex(headers,["nomor","nomobil","nocontainer","referensi","nopol"]);
+    const qi=headerIndex(headers,["qty","carton","qtycarton","totalcarton","totalqtycarton"]);
 
-    const ti=headerIndex(headers,[
-      "jenis",
-      "type",
-      "aktivitas",
-      "jenisaktivitas"
-    ]);
-
-    const ni=headerIndex(headers,[
-      "nomor",
-      "nomobil",
-      "nocontainer",
-      "referensi",
-      "nopol"
-    ]);
-
-    const qi=headerIndex(headers,[
-      "qty",
-      "carton",
-      "qtycarton",
-      "totalcarton",
-      "totalqtycarton"
-    ]);
-
-    if([di,ti,ni,qi].includes(-1)) {
-      throw new Error(
-        "Header wajib: TANGGAL, JENIS, NOMOR, QTY."
-      );
-    }
+    if([di,ti,ni,qi].includes(-1))
+      throw new Error("Header wajib: TANGGAL, JENIS, NOMOR, QTY.");
 
     const grouped=new Map();
 
     rows.forEach((row,i)=>{
-
       const date=parseDate(row[headers[di]]);
-
       const type=normalizeType(row[headers[ti]]);
+      const number=String(row[headers[ni]]||"").trim().toUpperCase();
+      const qty=Number(String(row[headers[qi]]??"").replace(/,/g,""));
 
-      const number=String(
-        row[headers[ni]]||""
-      ).trim().toUpperCase();
-
-      const qty=Number(
-        String(row[headers[qi]]??"").replace(/,/g,"")
-      );
-
-      if(
-        !date||
-        !type||
-        !number||
-        !Number.isSafeInteger(qty)||
-        qty<0
-      ) {
-        throw new Error(
-          "Data tidak valid pada baris "+(i+2)
-        );
-      }
+      if(!date||!type||!number||!Number.isSafeInteger(qty)||qty<0)
+        throw new Error("Data tidak valid pada baris "+(i+2));
 
       const key=[date,type,norm(number)].join("|");
 
       if(!grouped.has(key)) {
-
         grouped.set(key,{
           activity_date:date,
           activity_type:databaseActivityType(type),
           vehicle_number:number,
-          container_number:
-            type==="OUTBOUND"?number:null,
+          container_number:type==="OUTBOUND"?number:null,
           total_carton:0
         });
-
       }
 
       grouped.get(key).total_carton+=qty;
-
     });
 
     const imported=[...grouped.values()];
+    if(!imported.length)throw new Error("Tidak ada baris valid.");
 
-    if(!imported.length) {
-      throw new Error("Tidak ada baris valid.");
-    }
-
-    const start=imported
-      .map(x=>x.activity_date)
-      .sort()[0];
-
-    const end=imported
-      .map(x=>x.activity_date)
-      .sort()
-      .at(-1);
+    const start=imported.map(x=>x.activity_date).sort()[0];
+    const end=imported.map(x=>x.activity_date).sort().at(-1);
 
     if(mode==="replace") {
-
-      if(!confirm(
-        "Ganti master pada periode "+
-        dateFmt(start)+" sampai "+dateFmt(end)+"?"
-      )) {
-        return;
-      }
-
+      if(!confirm("Ganti master pada periode "+dateFmt(start)+" sampai "+dateFmt(end)+"?"))return;
     }
 
-    const upload=await sb
-      .from("excel_uploads")
-      .insert({
-        file_name:file.name,
-        period_start:start,
-        period_end:end,
-        upload_status:"Diproses",
-        total_rows:imported.length,
-        upload_note:"Upload melalui LoaderOPS",
-        uploaded_by:authUser.id
-      })
-      .select()
-      .single();
+    const upload=await sb.from("excel_uploads").insert({
+      file_name:file.name,
+      period_start:start,
+      period_end:end,
+      upload_status:"Diproses",
+      total_rows:imported.length,
+      upload_note:"Upload melalui LoaderOPS",
+      uploaded_by:authUser.id
+    }).select().single();
 
-    if(upload.error) {
-      throw upload.error;
-    }
+    if(upload.error)throw upload.error;
 
     if(mode==="replace") {
-
-      const del=await sb
-        .from("excel_reference_rows")
+      const del=await sb.from("excel_reference_rows")
         .delete()
         .gte("activity_date",start)
         .lte("activity_date",end);
 
-      if(del.error) {
-        throw del.error;
-      }
-
+      if(del.error)throw del.error;
     }
 
     const batch=imported.map(x=>({
@@ -216,55 +1414,33 @@ async function uploadMaster() {
     }));
 
     for(let i=0;i<batch.length;i+=500) {
-
       const part=batch.slice(i,i+500);
-
-      const inserted=await sb
-        .from("excel_reference_rows")
-        .insert(part);
+      const inserted=await sb.from("excel_reference_rows").insert(part);
 
       if(inserted.error) {
-
-        await sb
-          .from("excel_uploads")
-          .update({
-            upload_status:"Gagal",
-            upload_note:inserted.error.message
-          })
+        await sb.from("excel_uploads")
+          .update({upload_status:"Gagal",upload_note:inserted.error.message})
           .eq("id",upload.data.id);
-
         throw inserted.error;
       }
-
     }
 
-    await sb
-      .from("excel_uploads")
-      .update({
-        upload_status:"Berhasil"
-      })
+    await sb.from("excel_uploads")
+      .update({upload_status:"Berhasil"})
       .eq("id",upload.data.id);
 
     await loadAll();
-
-    notify(
-      "Master berhasil diupload: "+
-      imported.length+" nomor unik."
-    );
-
+    notify("Master berhasil diupload: "+imported.length+" nomor unik.");
     renderMaster();
 
   } catch(e) {
-
     console.error(e);
-
     notify("Upload gagal: "+e.message);
-
   }
 }
 
 /* ================================================
-   12. MASTER PAGE
+   13. MASTER PAGE
 ================================================ */
 
 function renderMaster() {
@@ -275,9 +1451,7 @@ function renderMaster() {
   );
 
   document.getElementById("content").innerHTML=`
-
     <section class="panel">
-
       <h3>Upload Master Data Mingguan</h3>
 
       <div class="notice">
@@ -287,207 +1461,101 @@ function renderMaster() {
       </div>
 
       <div class="formgrid">
-
         <div class="field">
           <label>File Master CSV</label>
-
-          <input
-            type="file"
-            id="masterFile"
-            accept=".csv,text/csv">
+          <input type="file" id="masterFile" accept=".csv,text/csv">
         </div>
-
         <div class="field">
           <label>Mode Upload</label>
-
           <select id="masterMode">
-            <option value="merge">
-              Tambah / Perbarui Master
-            </option>
-
-            <option value="replace">
-              Ganti Periode Master
-            </option>
+            <option value="merge">Tambah / Perbarui Master</option>
+            <option value="replace">Ganti Periode Master</option>
           </select>
         </div>
-
         <div class="field">
           <label>&nbsp;</label>
-
-          <button
-            class="btn green"
-            onclick="uploadMaster()">
-
+          <button class="btn green" onclick="uploadMaster()">
             Upload & Validasi
-
           </button>
         </div>
-
       </div>
 
-      <button
-        class="btn light"
-        onclick="downloadTemplate()">
-
+      <button class="btn light" onclick="downloadTemplate()">
         Download Template CSV
-
       </button>
-
-      <p class="muted">
-        Gunakan CSV UTF-8.
-        Kolom: TANGGAL, JENIS, NOMOR, QTY.
-      </p>
-
+      <p class="muted">Gunakan CSV UTF-8. Kolom: TANGGAL, JENIS, NOMOR, QTY.</p>
     </section>
 
     <section class="panel">
-
       <h3>Riwayat Upload</h3>
-
       ${uploads.length?`
-
         <div class="tablewrap">
-
           <table>
-
-            <thead>
-              <tr>
-                <th>File</th>
-                <th>Periode</th>
-                <th>Baris</th>
-                <th>Status</th>
-                <th>Waktu Upload</th>
-              </tr>
-            </thead>
-
+            <thead><tr>
+              <th>File</th><th>Periode</th><th>Baris</th>
+              <th>Status</th><th>Waktu Upload</th>
+            </tr></thead>
             <tbody>
-
               ${uploads.map(u=>`
-
                 <tr>
                   <td>${esc(u.file_name)}</td>
-
-                  <td>
-                    ${dateFmt(u.period_start)}
-                    -
-                    ${dateFmt(u.period_end)}
-                  </td>
-
+                  <td>${dateFmt(u.period_start)} - ${dateFmt(u.period_end)}</td>
                   <td>${fmt(u.total_rows)}</td>
-
                   <td>${esc(u.upload_status)}</td>
-
-                  <td>
-                    ${new Date(u.created_at).toLocaleString("id-ID")}
-                  </td>
+                  <td>${new Date(u.created_at).toLocaleString("id-ID")}</td>
                 </tr>
-
               `).join("")}
-
             </tbody>
-
           </table>
-
         </div>
-
       `:'<p class="muted">Belum ada upload.</p>'}
-
     </section>
 
     <section class="panel">
-
       <div class="toolbar">
-
         <h3>Master Data</h3>
-
-        <button
-          class="btn light"
-          onclick="exportMaster()">
-
-          Ekspor CSV
-
-        </button>
-
+        <button class="btn light" onclick="exportMaster()">Ekspor CSV</button>
       </div>
-
       ${masterTable(rows)}
-
     </section>
-
   `;
 }
 
 function masterTable(rows) {
-
-  if(!rows.length) {
-    return '<p class="muted">Belum ada master.</p>';
-  }
+  if(!rows.length)return '<p class="muted">Belum ada master.</p>';
 
   return `
-
     <div class="tablewrap">
-
       <table>
-
-        <thead>
-          <tr>
-            <th>Tanggal</th>
-            <th>Jenis</th>
-            <th>Nomor</th>
-            <th>Total Carton</th>
-          </tr>
-        </thead>
-
+        <thead><tr>
+          <th>Tanggal</th><th>Jenis</th><th>Nomor</th><th>Total Carton</th>
+        </tr></thead>
         <tbody>
-
           ${rows.map(m=>`
-
             <tr>
-
               <td>${dateFmt(m.activity_date)}</td>
-
               <td>${esc(activityType(m))}</td>
-
-              <td>
-                ${esc(
-                  m.activity_type==="Inbound"
-                    ?m.vehicle_number
-                    :(m.container_number||m.vehicle_number)
-                )}
-              </td>
-
+              <td>${esc(m.activity_type==="INBOUND"?m.vehicle_number:(m.container_number||m.vehicle_number))}</td>
               <td>${fmt(m.total_carton)}</td>
-
             </tr>
-
           `).join("")}
-
         </tbody>
-
       </table>
-
     </div>
-
   `;
 }
 
 function downloadTemplate() {
-
   downloadCSV(
     "template_master_loaderops.csv",
-
     ["TANGGAL","JENIS","NOMOR","QTY"],
-
-    [
-      ["2026-11-02","INBOUND","B 9075 KXV",29],
-      ["2026-11-02","OUTBOUND","HLCU1234567",100]
-    ]
+    [["2026-11-02","INBOUND","B 9075 KXV",29],
+     ["2026-11-02","OUTBOUND","HLCU1234567",100]]
   );
-
 }
 
 /* ================================================
-   13. REPORTS
+   14. REPORTS
 ================================================ */
 
 function renderReports() {
@@ -499,208 +1567,104 @@ function renderReports() {
     (dash.loader==="all"||a.loader_id===dash.loader)
   );
 
-  const total=rows.reduce(
-    (s,a)=>s+Number(a.total_carton),
-    0
-  );
+  const total=rows.reduce((s,a)=>s+Number(a.total_carton),0);
 
   document.getElementById("content").innerHTML=`
-
     <section class="panel">
-
       <div class="toolbar">
-
         <h3>Laporan Operasional</h3>
-
         <div class="actions">
-
-          <button
-            class="btn light"
-            onclick="exportReport()">
-
-            Export CSV
-
-          </button>
-
-          <button
-            class="btn gray"
-            onclick="window.print()">
-
-            Cetak / PDF
-
-          </button>
-
+          <button class="btn light" onclick="exportReport()">Export CSV</button>
+          <button class="btn gray" onclick="window.print()">Cetak / PDF</button>
         </div>
-
       </div>
-
       <p class="muted">
-        Periode ${dateFmt(dash.start)}
-        sampai ${dateFmt(dash.end)}.
-
+        Periode ${dateFmt(dash.start)} sampai ${dateFmt(dash.end)}.
         Gunakan filter Dashboard untuk mengubah periode.
       </p>
-
       <div class="cards">
-
         ${kpi("Total Aktivitas",rows.length,"Transaksi")}
-
         ${kpi("Total Carton",total,"Carton")}
-
-        ${kpi(
-          "Inbound",
-          rows.filter(a=>a.type==="INBOUND")
-            .reduce((s,a)=>s+Number(a.total_carton),0),
-          "Carton"
-        )}
-
-        ${kpi(
-          "Outbound",
-          rows.filter(a=>a.type==="OUTBOUND")
-            .reduce((s,a)=>s+Number(a.total_carton),0),
-          "Carton"
-        )}
-
+        ${kpi("Inbound",rows.filter(a=>a.type==="INBOUND").reduce((s,a)=>s+Number(a.total_carton),0),"Carton")}
+        ${kpi("Outbound",rows.filter(a=>a.type==="OUTBOUND").reduce((s,a)=>s+Number(a.total_carton),0),"Carton")}
       </div>
-
       ${activityTable(rows)}
-
     </section>
-
   `;
 }
 
 /* ================================================
-   14. AUDIT LOG
+   15. AUDIT LOG
 ================================================ */
 
 function renderAudit() {
   if(!isManager())return;
 
   document.getElementById("content").innerHTML=`
-
     <section class="panel">
-
       <div class="toolbar">
-
         <h3>Audit Log</h3>
-
-        <button
-          class="btn light"
-          onclick="refreshData()">
-
-          Refresh
-
-        </button>
-
+        <button class="btn light" onclick="refreshData()">Refresh</button>
       </div>
-
       <div class="tablewrap">
-
         <table>
-
-          <thead>
-            <tr>
-              <th>Waktu</th>
-              <th>User ID</th>
-              <th>Tabel</th>
-              <th>Aksi</th>
-              <th>Record ID</th>
-            </tr>
-          </thead>
-
+          <thead><tr>
+            <th>Waktu</th><th>User ID</th><th>Tabel</th>
+            <th>Aksi</th><th>Record ID</th>
+          </tr></thead>
           <tbody>
-
             ${audit.map(a=>`
-
               <tr>
-
-                <td>
-                  ${new Date(a.created_at).toLocaleString("id-ID")}
-                </td>
-
+                <td>${new Date(a.created_at).toLocaleString("id-ID")}</td>
                 <td>${esc(a.user_id||"-")}</td>
-
                 <td>${esc(a.table_name)}</td>
-
                 <td>${esc(a.action)}</td>
-
                 <td>${esc(a.record_id||a.activity_id||"-")}</td>
-
               </tr>
-
             `).join("")}
-
           </tbody>
-
         </table>
-
       </div>
-
-      ${audit.length
-        ?""
-        :'<p class="muted">Belum ada audit log atau akses belum tersedia.</p>'}
-
+      ${audit.length?"":'<p class="muted">Belum ada audit log atau akses belum tersedia.</p>'}
     </section>
-
   `;
 }
 
 /* ================================================
-   15. EXPORT CSV
+   16. EXPORT CSV
 ================================================ */
 
 function downloadCSV(filename,headers,rows) {
-
-  const cell=v=>
-    '"'+String(v??"").replace(/"/g,'""')+'"';
+  const cell=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
 
   const csv="\uFEFF"+
-    [headers,...rows]
-      .map(r=>r.map(cell).join(","))
-      .join("\r\n");
+    [headers,...rows].map(r=>r.map(cell).join(",")).join("\r\n");
 
-  const blob=new Blob(
-    [csv],
-    {type:"text/csv;charset=utf-8"}
-  );
-
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
   const url=URL.createObjectURL(blob);
-
   const a=document.createElement("a");
 
   a.href=url;
   a.download=filename;
-
   a.click();
 
   URL.revokeObjectURL(url);
-
 }
 
 function exportMaster() {
-
   downloadCSV(
     "loaderops_master.csv",
-
     ["Tanggal","Jenis","Nomor","Total Carton"],
-
     master.map(m=>[
       m.activity_date,
       activityType(m),
-
-      activityType(m)==="INBOUND"
-        ?m.vehicle_number
-        :(m.container_number||m.vehicle_number),
-
+      m.activity_type==="INBOUND"?m.vehicle_number:(m.container_number||m.vehicle_number),
       m.total_carton
     ])
   );
-
 }
 
 function exportReport() {
-
   const rows=allActivities().filter(a=>
     a.activity_date>=dash.start&&
     a.activity_date<=dash.end&&
@@ -709,22 +1673,9 @@ function exportReport() {
 
   downloadCSV(
     "loaderops_report.csv",
-
-    [
-      "Tanggal",
-      "Loader",
-      "Jenis",
-      "Nomor",
-      "Qty Loader",
-      "Qty Master",
-      "Selisih",
-      "Status"
-    ],
-
+    ["Tanggal","Loader","Jenis","Nomor","Qty Loader","Qty Master","Selisih","Status"],
     rows.map(a=>{
-
       const v=validateActivity(a.type,a);
-
       return [
         a.activity_date,
         loaderName(a.loader_id),
@@ -735,42 +1686,27 @@ function exportReport() {
         v.difference??"",
         v.status
       ];
-
     })
   );
-
 }
 
 /* ================================================
-   16. START APPLICATION
+   17. START APPLICATION
 ================================================ */
 
 async function startApp() {
-
-  const {
-    data:{session}
-  }=await sb.auth.getSession();
+  const {data:{session}}=await sb.auth.getSession();
 
   if(session?.user) {
-
     authUser=session.user;
-
     try {
-
       await initializeApp();
-
     } catch(e) {
-
       console.error(e);
-
       notify("Gagal membuka aplikasi: "+e.message);
-
       await logout();
-
     }
-
   }
-
 }
 
 startApp();
