@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {DEFAULTS,shiftFor,isMandatoryRestDate,dayTypeFor,calculate,computePayroll,payrollRange} from './core.mjs';
+const s=structuredClone(DEFAULTS);
+assert.equal(shiftFor('2026-11-16',s),'P');assert.equal(shiftFor('2026-11-23',s),'S');assert.equal(shiftFor('2026-12-28',s),'P');
+assert.equal(isMandatoryRestDate('2026-11-28',s),true);assert.equal(isMandatoryRestDate('2026-11-29',s),true);
+assert.equal(dayTypeFor('2026-11-28',s,{'2026-11-28':{shift:'S',dayType:'work'}},{}),'rest');
+assert.equal(dayTypeFor('2026-11-29',s,{'2026-11-29':{shift:'P',dayType:'work'}},{}),'rest');
+assert.equal(dayTypeFor('2026-12-05',s,{},{}),'work');
+assert.equal(payrollRange('2027-01').start,'2026-12-16');
+const r={date:'2026-11-28',dayType:'rest',shift:'OFF',intervals:[{start:'08:00',end:'15:00',startOffset:0,endOffset:0}],manualBreak:0};
+assert.equal(calculate(r,s).amount,463694);
+assert.equal(computePayroll(s,695541).gross,6425641);
+console.log('v17: shift, weekend, payroll, overtime: PASS');

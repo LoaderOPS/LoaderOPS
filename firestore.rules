@@ -1,0 +1,14 @@
+rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  match /otBackups/{uid} {
+   allow read, delete: if request.auth != null && request.auth.uid == uid;
+   allow create, update: if request.auth != null
+     && request.auth.uid == uid
+     && request.resource.data.keys().hasOnly(['payload','savedAt','formatVersion'])
+     && request.resource.data.payload is string
+     && request.resource.data.payload.size() < 850000
+     && request.resource.data.formatVersion == 1;
+  }
+ }
+}

@@ -1,0 +1,447 @@
+:root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:#f3f7fc;color:#102a52;font-size:15px}*{box-sizing:border-box}body{margin:0;padding-bottom:92px}header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;background:#102a52;color:white;padding:15px max(18px,calc((100% - 600px)/2));box-shadow:0 3px 14px #102a521a}header h1{font-size:20px;margin:3px 0}header small{font-size:10px;letter-spacing:2px;color:#b9d9ff}.status{font-size:11px;background:#254873;padding:7px 10px;border-radius:20px}main{max-width:640px;margin:auto;padding:18px 15px}.page{display:none}.page.active{display:block}article{background:white;border-radius:17px;padding:17px;margin-bottom:13px;box-shadow:0 2px 12px #1b42700b}h2{font-size:18px;margin:0 0 15px}h3{font-size:15px;margin:0 0 12px}.eyebrow{color:#62768b;font-size:13px;margin:3px 0 12px}.hero{background:linear-gradient(125deg,#102a52,#235da1);color:#fff;padding:22px}.hero small{color:#d9e9ff}.hero .large{font-size:clamp(29px,7vw,42px);font-weight:800;letter-spacing:-1px;margin:9px 0}.hero .muted{color:#c3dafb;margin-bottom:0}.muted,.hint{color:#6c7d92;font-size:12px;line-height:1.5}.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metrics article{min-height:95px}.metrics span{display:block;font-size:12px;color:#75869b}.metrics strong{font-size:23px;display:block;margin-top:8px}.line{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid #eef2f7}.line:last-child{border:0}.line span{color:#637388}.shiftbox{background:#e6f1ff;padding:14px;border-radius:12px;font-weight:700;color:#15539b}.chart{height:145px;display:flex;align-items:flex-end;gap:8px;padding:12px 0 0}.barWrap{flex:1;text-align:center;font-size:10px;color:#6b7e94;min-width:0}.bar{background:linear-gradient(#4b9cec,#1a4a80);border-radius:6px 6px 0 0;min-height:3px}.barWrap small{font-size:10px;display:block;margin-top:4px}nav{position:fixed;z-index:20;bottom:0;left:0;right:0;display:flex;justify-content:space-around;background:white;border-top:1px solid #e3ebf5;padding:8px 4px max(9px,env(safe-area-inset-bottom));box-shadow:0 -4px 20px #102a520b}nav button{border:0;background:none;color:#76879c;font-size:23px;flex:1;padding:3px 0;cursor:pointer}nav button span{font-size:10px;display:block;margin-top:2px}nav button.selected{color:#1164bb;font-weight:bold}label{display:block;font-size:12px;font-weight:600;margin:12px 0;color:#334c67}input,select,textarea{width:100%;display:block;background:#fff;border:1px solid #d5e0ec;color:#153252;border-radius:10px;padding:12px;font:inherit;margin-top:6px;min-width:0}input:focus,select:focus,textarea:focus{outline:2px solid #80bafa;border-color:#498cdb}input[type=checkbox]{width:auto;display:inline-block}button,.filebtn{font:inherit;border:1px solid #cbd9e9;border-radius:10px;padding:11px 14px;background:#fff;color:#164873;font-weight:700;cursor:pointer}.primary{color:#fff;background:#1762b2;border-color:#1762b2}.full{width:100%;margin:12px 0}.actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.actions>*{flex:1}.smallbtn{padding:7px 10px;font-size:12px}.sectionHead{display:flex;align-items:center;justify-content:space-between;gap:10px}.sectionHead input{max-width:155px}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.breakdown{border:1px solid #d9e8f7;background:#f3f8ff;border-radius:12px;padding:14px;margin:15px 0}.breakdown .total{font-size:22px;font-weight:800;color:#07549a}.interval{border:1px solid #deebf7;background:#f8fbff;border-radius:12px;padding:12px;margin-bottom:10px}.interval .two{grid-template-columns:1fr 1fr}.interval label{margin:7px 0}.interval button{padding:6px 10px}.calendarGrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin-bottom:9px}.weekdays{text-align:center;font-size:11px;color:#7a899b}.day{border:1px solid #e1eaf4;border-radius:9px;background:white;min-height:63px;padding:6px 2px;text-align:center;cursor:pointer;font-size:12px}.day.selected{outline:2px solid #226cb7}.day.empty{border:none;background:transparent}.day small{display:block;font-size:10px;margin-top:6px}.day.p{background:#e8f3ff}.day.s{background:#f0ebff}.day.off{background:#f3f4f6;color:#808995}.day.hasOT:after{content:'●';font-size:11px;color:#00a382;display:block}.legend{display:flex;flex-wrap:wrap;gap:9px;font-size:10px;margin-bottom:15px;color:#657a91}.item{padding:13px 0;border-bottom:1px solid #e8eef7}.item:last-child{border:0}.itemhead{display:flex;justify-content:space-between;gap:10px}.itemhead strong{font-size:13px}.item .muted{margin:4px 0}.tag{display:inline-block;background:#e9f2ff;color:#135593;font-size:10px;padding:4px 8px;border-radius:20px}.itembuttons{display:flex;gap:8px;margin-top:8px}.itembuttons button{padding:5px 10px;font-size:11px}.checks{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.checks label{margin:3px 0}.inlinecheck{display:flex;align-items:center;gap:8px}fieldset{border:1px solid #dfebf6;border-radius:10px}fieldset legend{font-size:12px}.filebtn{display:inline-block;text-align:center}#toast{position:fixed;z-index:40;bottom:90px;left:50%;transform:translateX(-50%);width:max-content;max-width:90%;background:#15395f;color:white;border-radius:10px;padding:10px 15px;box-shadow:0 4px 16px #102a5238;display:none}#toast.show{display:block}@media(min-width:900px){nav{max-width:640px;margin:auto;border-radius:15px 15px 0 0}header{justify-content:space-between}}@media print{header,nav,.actions,input,button,.page:not(#history),#history>label,#history>.two{display:none!important}body{padding:0;background:white}main{padding:0;max-width:none}#history{display:block!important}article{box-shadow:none;border:1px solid #ddd}#historyList .itembuttons{display:none}}
+
+/* Rotating motivational banner – no goal tracker or financial targets */
+.motivation{background:linear-gradient(135deg,#123459,#2566a5);color:#fff;min-height:235px;padding:20px 22px;position:relative;overflow:hidden}
+.motivation::after{content:"";position:absolute;width:190px;height:190px;right:-75px;top:28px;border:1px solid #ffffff26;border-radius:50%;pointer-events:none}
+.motivation-top,.motivation-bottom{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.motivation-top{font-size:10px;letter-spacing:1.45px;color:#c5e1ff;font-weight:700}
+.motivation-icon{font-size:32px;margin-top:16px;line-height:1}
+.motivation-quote{font-size:clamp(18px,4.4vw,23px);font-weight:760;line-height:1.33;margin:14px 0 7px;max-width:510px;min-height:62px;position:relative;z-index:1}
+.motivation-note{font-size:12px;color:#cbe3fa;margin:0 0 15px}
+.motivation-bottom{justify-content:center;gap:18px}
+.motivation-arrow{color:#fff;background:#ffffff20;border:1px solid #ffffff47;padding:0;border-radius:50%;width:30px;height:30px;font-size:23px;line-height:1;display:flex;align-items:center;justify-content:center}
+.motivation-dots{display:flex;align-items:center;gap:7px}
+.motivation-dot{width:7px;height:7px;border-radius:50%;border:0;padding:0;background:#ffffff60;min-width:7px}
+.motivation-dot.active{width:19px;border-radius:10px;background:#fff}
+.motivation-arrow:focus-visible,.motivation-dot:focus-visible{outline:2px solid white;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){.motivation *{animation:none!important;transition:none!important}}
+
+
+/* v9 — Phone-fit layout. No desktop-width canvas or tiny controls on mobile. */
+html{width:100%;min-width:0;overflow-x:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{width:100%;min-width:0;overflow-x:hidden}
+main,.page,form,article,.interval,.breakdown{min-width:0}
+button,input,select,textarea{max-width:100%}
+@media(max-width:700px){
+  :root{font-size:16px}
+  body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+  header{width:100%;padding:14px 16px;gap:12px}
+  header h1{font-size:21px}
+  header small{font-size:10px}
+  main{width:100%;max-width:none;padding:16px 12px 24px}
+  h2{font-size:20px;line-height:1.3}
+  h3{font-size:17px}
+  article{width:100%;border-radius:17px;padding:16px;margin-bottom:12px}
+  .hero{padding:21px 19px}
+  .hero .large{font-size:clamp(32px,10vw,43px);overflow-wrap:anywhere}
+  .metrics{gap:9px}
+  .metrics article{padding:14px;min-width:0}
+  .metrics strong{font-size:clamp(18px,5.8vw,24px);overflow-wrap:anywhere}
+  .metrics span{font-size:12px;line-height:1.35}
+  .motivation{min-height:220px;padding:20px 18px}
+  .motivation-quote{font-size:clamp(19px,5.4vw,24px);min-height:0}
+  .motivation-icon{font-size:38px}
+  label{font-size:14px;margin:13px 0}
+  input,select,textarea{font-size:16px;min-height:46px;padding:11px 12px}
+  input[type="checkbox"]{min-height:auto}
+  button,.filebtn{font-size:15px;min-height:43px}
+  .interval{padding:12px 10px}
+  .interval .two{gap:8px}
+  .interval input,.interval select{padding:10px 8px}
+  .breakdown{padding:13px 11px}
+  .calendarGrid{gap:3px}
+  .day{font-size:13px;min-height:54px;padding:6px 0}
+  .day small{font-size:9px}
+  nav{width:100%;max-width:none!important;margin:0;left:0;right:0;border-radius:0!important;padding:8px 2px max(9px,env(safe-area-inset-bottom))}
+  nav button{min-width:0;padding:4px 1px;font-size:24px}
+  nav button span{font-size:11px;line-height:1.2}
+  .actions{gap:7px}
+  .actions>*{min-width:0}
+}
+@media(max-width:360px){
+  main{padding:12px 9px}
+  article{padding:13px}
+  .interval .two{grid-template-columns:1fr 1fr;gap:6px}
+  .two{gap:7px}
+  nav button span{font-size:10px}
+}
+
+.motivation-autoplay{font-size:11px;color:#cbe3fa;text-align:center}.sessionNote{font-size:12px;margin:2px 0 0}.interval{margin-bottom:12px}.interval .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}#addInterval[hidden]{display:none!important}
+
+
+/* v12 Mobile app shell: edge-to-edge content and larger usable controls. */
+html,body{max-width:100%;overflow-x:clip}
+body{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+@media screen and (max-width:900px){
+  main{width:100%;max-width:100%;margin:0;padding:14px clamp(10px,3vw,20px) 24px}
+  header{padding:13px clamp(13px,3vw,20px);gap:8px}
+  article{width:100%;max-width:none;margin-bottom:12px}
+  .page,.page>form{width:100%;max-width:100%}
+  nav{max-width:none!important;width:100%;border-radius:0!important;left:0;right:0}
+  .interval,.breakdown{width:100%;min-width:0}
+  .interval .two,.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .two>*{min-width:0}
+  input,select,textarea{width:100%;min-width:0;font-size:16px}
+  .sectionHead input{max-width:min(47vw,180px)}
+  .hero .large{font-size:clamp(29px,8vw,42px)}
+}
+@media screen and (max-width:480px){
+  main{padding:12px 10px 22px}
+  h2{font-size:20px}
+  article{padding:15px;border-radius:15px}
+  .hero{padding:18px 17px}
+  .motivation{min-height:0;padding:18px 16px}
+  .motivation-quote{font-size:clamp(19px,5.5vw,23px);min-height:0;margin:12px 0 6px}
+  .motivation-icon{font-size:32px;margin-top:12px}
+  .motivation-note{margin-bottom:8px}
+  .metrics{gap:8px}
+  .metrics article{padding:12px;min-height:77px}
+  .metrics strong{font-size:clamp(18px,5.3vw,22px)}
+  label{font-size:13px}
+  input,select,textarea{min-height:46px}
+  nav button{font-size:23px}
+  nav button span{font-size:11px}
+  #add .interval{padding:10px}
+  #add .interval label{font-size:12px}
+  #add .interval input{padding:10px 6px}
+  .calendarGrid{gap:3px}
+  .day{min-height:52px;padding:5px 1px;font-size:12px}
+  .day small{font-size:9px;overflow:hidden;text-overflow:ellipsis}
+}
+/* For Android browsers erroneously advertising a tablet/desktop-sized viewport. */
+@media (pointer:coarse) and (max-width:1100px){
+  main{max-width:100%;width:100%;margin-inline:0}
+  nav{max-width:100%!important;width:100%}
+}
+
+/* v13 Android readability: use real 14–18px body copy, not tiny desktop labels */
+@media screen and (max-width:700px){
+ :root{font-size:17px}
+ header h1{font-size:23px}header small{font-size:12px}.status{font-size:12px}
+ .eyebrow{font-size:15px} h2{font-size:22px}h3{font-size:18px}
+ .muted,.hint{font-size:14px;line-height:1.55}
+ .motivation-top{font-size:12px}.motivation-note,.motivation-autoplay{font-size:14px}
+ .motivation-quote{font-size:clamp(21px,5.8vw,26px)}
+ .hero small{font-size:15px}.hero .large{font-size:clamp(33px,9.2vw,44px)}
+ .metrics span{font-size:14px;line-height:1.4}.metrics strong{font-size:clamp(20px,6vw,27px)}
+ .line{font-size:14px;line-height:1.4}.line span{min-width:0}.line b{max-width:54%;text-align:right;overflow-wrap:anywhere}
+ .itemhead strong{font-size:15px}.item .muted{font-size:14px}.itembuttons button{font-size:14px}
+ .barWrap{font-size:12px}.legend{font-size:13px}.weekdays{font-size:12px}
+ nav button span{font-size:13px!important;font-weight:650}
+ label{font-size:15px!important} input,select,textarea{font-size:16px}
+ .interval label{font-size:14px!important}.sessionNote{font-size:14px}
+ .payroll-summary{padding:16px}.payroll-takehome strong{font-size:clamp(24px,7vw,32px)}
+}
+.payroll-summary h2{margin-bottom:9px}
+.payroll-takehome{background:#e7f2ff;border-radius:13px;padding:15px;margin-top:14px;color:#103b6f;display:flex;flex-direction:column;gap:6px}
+.payroll-takehome span{font-size:15px;font-weight:700}
+.payroll-takehome strong{font-size:29px;overflow-wrap:anywhere}
+.cutoff-picker{display:flex;align-items:center;gap:10px;flex-wrap:wrap;color:white;font-size:13px;max-width:100%;margin-top:12px}
+.cutoff-picker input{max-width:190px;min-width:0;background:#fff;color:#102a52}
+
+
+/* v15 — Broaden phone rules for Android PWAs reporting large CSS viewports */
+@media screen and (max-width:900px), screen and (pointer:coarse) and (orientation:portrait) and (max-width:1100px) {
+  :root {font-size:18px}
+  body {font-size:17px;line-height:1.5;padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+  main {width:100%;max-width:none;padding:16px 12px 28px}
+  header {padding:14px 15px;min-height:74px}
+  header h1 {font-size:23px!important;line-height:1.2}
+  header small {font-size:12px!important;letter-spacing:.7px}
+  .status {font-size:12px!important;padding:8px 9px}
+  article {padding:18px 16px!important;margin-bottom:14px;border-radius:17px}
+  h2 {font-size:23px!important;line-height:1.25;margin-bottom:15px}
+  h3 {font-size:19px!important;line-height:1.25}
+  .eyebrow {font-size:16px!important}
+  .muted,.hint {font-size:15px!important;line-height:1.5}
+  .hero {padding:22px 19px!important}
+  .hero small {font-size:16px!important;line-height:1.35}
+  .hero .large {font-size:clamp(36px,10.5vw,48px)!important;line-height:1.15}
+  .hero .muted {font-size:15px!important}
+  .motivation {min-height:0!important;padding:22px 19px!important}
+  .motivation-top {font-size:12px!important;letter-spacing:.65px}
+  .motivation-icon {font-size:42px!important;margin-top:12px!important}
+  .motivation-quote {font-size:clamp(23px,6.2vw,28px)!important;line-height:1.3;min-height:0!important}
+  .motivation-note {font-size:16px!important;margin-bottom:10px!important}
+  .motivation-autoplay {font-size:14px!important}
+  .motivation-arrow {display:none!important}
+  .metrics {gap:10px}
+  .metrics article {min-height:110px;padding:17px 14px!important}
+  .metrics span {font-size:15px!important;line-height:1.35}
+  .metrics strong {font-size:clamp(24px,7vw,31px)!important;margin-top:10px}
+  .line {padding:13px 0;font-size:16px!important;line-height:1.45;align-items:center}
+  .line span {font-size:15px!important;max-width:65%}
+  .line b {font-size:16px;max-width:55%;overflow-wrap:anywhere;text-align:right}
+  .shiftbox {font-size:18px!important;padding:16px}
+  .chart {height:160px}
+  .barWrap,.barWrap small {font-size:13px!important}
+  .item {padding:16px 0}
+  .itemhead {align-items:start}
+  .itemhead strong {font-size:17px!important;line-height:1.4}
+  .item .muted,.item small {font-size:14px!important;line-height:1.5}
+  .itembuttons button {font-size:15px!important;padding:11px 12px;min-height:44px}
+  .tag {font-size:13px!important}
+  label {font-size:16px!important;line-height:1.4;margin:15px 0 8px}
+  input,select,textarea {font-size:17px!important;min-height:52px;padding:13px 12px}
+  input[type=checkbox] {min-height:0}
+  button,.filebtn {font-size:16px!important;min-height:48px}
+  .smallbtn {font-size:14px!important;min-height:42px}
+  .sectionHead {align-items:center}
+  .interval {padding:15px 12px!important}
+  .interval label {font-size:15px!important}
+  .interval .two {gap:10px}
+  .interval input,.interval select {padding:12px 8px;font-size:16px!important}
+  .sessionNote {font-size:15px!important;line-height:1.5}
+  .breakdown {padding:17px 15px!important;margin-top:18px}
+  .breakdown .total {font-size:30px!important}
+  .payroll-summary {padding:20px 16px!important}
+  .payroll-takehome {padding:18px 16px}
+  .payroll-takehome span {font-size:16px!important}
+  .payroll-takehome strong {font-size:clamp(30px,9vw,39px)!important}
+  .cutoff-picker {font-size:16px!important;gap:8px}
+  .cutoff-picker input {font-size:16px!important;min-height:48px}
+  .calendarGrid {gap:3px}
+  .day {min-height:57px;font-size:15px!important}
+  .day small {font-size:11px!important}
+  .weekdays,.legend {font-size:13px!important}
+  .checks {grid-template-columns:repeat(3,1fr);gap:8px}
+  .checks label {font-size:14px!important}
+  nav {min-height:70px;padding:9px 3px max(9px,env(safe-area-inset-bottom))}
+  nav button {font-size:26px!important;min-height:52px}
+  nav button span {font-size:14px!important;line-height:1.3;margin-top:4px}
+}
+@media screen and (max-width:380px) {
+ main {padding:12px 10px 24px}
+ article {padding:15px 12px!important}
+ .metrics article {padding:13px 10px!important}
+ .metrics span {font-size:14px!important}
+ .metrics strong {font-size:23px!important}
+ .interval .two {grid-template-columns:1fr}
+ .hero .large {font-size:34px!important}
+ .line span {max-width:55%}
+}
+
+/* v15: readable typography in Android PWA, including enlarged CSS viewport */
+@media screen and (max-width:900px), screen and (pointer:coarse) and (orientation:portrait) and (max-width:1100px) {
+  :root {font-size:19px!important}
+  body {font-size:18px!important;line-height:1.55!important}
+  header h1 {font-size:26px!important}
+  header small,.status {font-size:14px!important}
+  .eyebrow {font-size:17px!important}
+  h2 {font-size:24px!important}
+  h3 {font-size:21px!important}
+  .muted,.hint,.sessionNote {font-size:16px!important;line-height:1.55}
+  .motivation-top {font-size:14px!important;letter-spacing:.3px!important}
+  .motivation-quote {font-size:clamp(24px,5vw,30px)!important}
+  .motivation-note {font-size:17px!important}
+  .motivation-autoplay {font-size:15px!important}
+  .hero small,.hero .muted {font-size:17px!important}
+  .hero .large {font-size:clamp(37px,8.5vw,51px)!important}
+  .cutoff-picker,.cutoff-picker label {font-size:17px!important}
+  .metrics span {font-size:17px!important}
+  .metrics strong {font-size:clamp(25px,6vw,35px)!important}
+  .line {font-size:17px!important;min-height:48px!important;gap:12px!important}
+  .line span,.line b {font-size:16px!important;line-height:1.45}
+  .payroll-summary .muted {font-size:15px!important}
+  .payroll-takehome span {font-size:18px!important}
+  .payroll-takehome strong {font-size:clamp(33px,7vw,44px)!important}
+  .chart {min-height:175px!important}
+  .barWrap,.barWrap small {font-size:14px!important}
+  .itemhead strong,.itemhead b {font-size:18px!important}
+  .item .muted,.item small {font-size:16px!important}
+  .shiftbox {font-size:19px!important}
+  .day {font-size:16px!important}
+  .day small {font-size:12px!important}
+  label {font-size:17px!important}
+  input,select,textarea {font-size:18px!important;min-height:54px!important}
+  input[type=checkbox] {min-height:0!important}
+  button,.filebtn {font-size:17px!important;min-height:48px}
+  .interval label {font-size:16px!important}
+  .interval input,.interval select {font-size:17px!important}
+  .breakdown .line {min-height:42px!important}
+  .breakdown .total {font-size:34px!important}
+  nav button {font-size:27px!important}
+  nav button span {font-size:15px!important}
+}
+
+/* v16 deliberate mobile comfort readability, always visible on Android phones */
+@media screen and (max-width:1200px) {
+ :root,body{font-size:19px!important;line-height:1.5!important}
+ header h1{font-size:24px!important} header small,.status{font-size:13px!important}
+ article{padding:18px 16px!important}
+ h2{font-size:23px!important}h3{font-size:20px!important}
+ .eyebrow,.hint,.muted{font-size:16px!important}
+ .motivation-top{font-size:13px!important} .motivation-quote{font-size:26px!important;line-height:1.32!important}
+ .motivation-note,.motivation-autoplay{font-size:15px!important}
+ .hero small{font-size:17px!important} .hero .large{font-size:42px!important}
+ .cutoff-picker{font-size:16px!important}
+ .line,.line span,.line b{font-size:17px!important;line-height:1.4!important}
+ .metrics span{font-size:16px!important}.metrics strong{font-size:29px!important}
+ .itemhead strong,.itemhead b{font-size:18px!important}.item .muted,.item small{font-size:16px!important}
+ label{font-size:17px!important}input,select,textarea{font-size:18px!important;min-height:50px!important}
+ input[type=checkbox]{min-height:initial!important}button{font-size:17px!important;min-height:44px}
+ .barWrap,.barWrap small{font-size:13px!important}
+ nav button span{font-size:14px!important}.weekdays,.legend{font-size:13px!important}
+ .payroll-takehome strong{font-size:36px!important}
+}
+#buildVersion{font-size:12px!important;color:#bfe3ff;font-weight:700;letter-spacing:.4px;margin-left:8px}
+
+/* v17: theme + portrait comfort design. No viewport-dependent tiny text. */
+:root{color-scheme:light;--v17-bg:#f0f5fc;--v17-panel:#fff;--v17-text:#142b48;--v17-muted:#536a83;--v17-border:#d6e3ef;--v17-field:#fff;--v17-accent:#1762b2;--v17-soft:#e7f2ff}
+html[data-theme="dark"]{color-scheme:dark;--v17-bg:#0c1526;--v17-panel:#18283f;--v17-text:#f3f8ff;--v17-muted:#b7cbe3;--v17-border:#344866;--v17-field:#223855;--v17-accent:#78b5ff;--v17-soft:#253d5c}
+html[data-theme="dark"] body{background:var(--v17-bg)!important;color:var(--v17-text)!important}
+html[data-theme="dark"] article,html[data-theme="dark"] nav{background:var(--v17-panel)!important;color:var(--v17-text)!important;border-color:var(--v17-border)}
+html[data-theme="dark"] article.hero{background:linear-gradient(130deg,#112d55,#215b9d)!important;color:white!important}
+html[data-theme="dark"] article.motivation{background:linear-gradient(130deg,#122e52,#135a80)!important;color:white!important}
+html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea,html[data-theme="dark"] button:not(.primary):not(.motivation-arrow):not(.motivation-dot):not(.day):not([data-page]){background:var(--v17-field)!important;color:var(--v17-text)!important;border-color:var(--v17-border)!important}
+html[data-theme="dark"] .line{border-bottom-color:var(--v17-border)!important}
+html[data-theme="dark"] .line span,html[data-theme="dark"] label,html[data-theme="dark"] .muted,html[data-theme="dark"] .hint,html[data-theme="dark"] .eyebrow,html[data-theme="dark"] .metrics span,html[data-theme="dark"] .barWrap,html[data-theme="dark"] .barWrap small,html[data-theme="dark"] nav button{color:var(--v17-muted)!important}
+html[data-theme="dark"] nav button.selected{color:#8dc5ff!important}
+html[data-theme="dark"] .metrics article{background:var(--v17-panel)!important}
+html[data-theme="dark"] .interval,html[data-theme="dark"] .breakdown,html[data-theme="dark"] .shiftbox,html[data-theme="dark"] .payroll-takehome{background:var(--v17-soft)!important;color:var(--v17-text)!important;border-color:var(--v17-border)!important}
+html[data-theme="dark"] .day{background:var(--v17-field)!important;color:var(--v17-text)!important;border-color:var(--v17-border)!important}
+html[data-theme="dark"] .day.p{background:#1c4264!important}html[data-theme="dark"] .day.s{background:#423357!important}html[data-theme="dark"] .day.off{background:#343e4e!important}
+html[data-theme="dark"] .weekdays,html[data-theme="dark"] .legend{color:var(--v17-muted)!important}
+.theme-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}
+.theme-buttons button{padding:13px 8px;font-size:16px!important;min-height:52px!important}
+.theme-buttons button[aria-pressed="true"]{outline:3px solid #64a9ff;outline-offset:1px}
+.cloud-status{font-size:16px;line-height:1.5;font-weight:600;color:var(--v17-text)}
+#weekendAuditResults .audit-warning{padding:11px;margin:9px 0;border-left:4px solid #f7b43c;background:var(--v17-soft);border-radius:9px;font-size:15px;line-height:1.5}
+#weekendAuditResults .audit-ok{color:var(--v17-muted);font-size:16px}
+@media screen and (max-width:1300px){
+ main{max-width:100%!important;width:100%!important;padding:14px 12px 28px!important}
+ .page,.page>form{width:100%;max-width:100%}
+ body{font-size:18px!important;line-height:1.5!important}
+ h2{font-size:24px!important}h3{font-size:21px!important}
+ article{padding:19px 16px!important}
+ .eyebrow,.hint,.muted{font-size:16px!important}
+ .line,.line span,.line b{font-size:17px!important;line-height:1.5!important}
+ .line{min-height:52px!important;align-items:center}
+ .line span{flex:1 1 50%;min-width:0}.line b{flex:0 0 auto;text-align:right;max-width:48%;overflow-wrap:anywhere}
+ .payroll-summary .hint{font-size:15px!important}
+ .hero .large{font-size:clamp(38px,9vw,50px)!important}
+ .payroll-takehome strong{font-size:clamp(34px,8vw,46px)!important}
+ .metrics span{font-size:16px!important}.metrics strong{font-size:30px!important}
+ .itemhead strong{font-size:18px!important}.item .muted{font-size:16px!important}
+ .barWrap,.barWrap small{font-size:14px!important}
+ input,select,textarea{font-size:18px!important;min-height:52px!important}label{font-size:17px!important}
+ nav button span{font-size:14px!important}nav button{min-height:52px!important}
+ .motivation-quote{font-size:clamp(24px,6vw,29px)!important}
+}
+@media(max-width:390px){.theme-buttons{grid-template-columns:1fr 1fr 1fr}.theme-buttons button{font-size:14px!important;padding:9px 4px}.interval .two{grid-template-columns:1fr!important}}
+
+
+/* ==========================================================================
+   v18 — DARK MODERN BLUE / FULL-VIEWPORT FINISH
+   Maintains all data, calculations and Firebase integration unchanged.
+   ========================================================================== */
+:root{
+  --ot-bg:#f0f5fb;--ot-panel:#ffffff;--ot-panel-2:#eaf3fc;
+  --ot-text:#152b48;--ot-muted:#526981;--ot-border:#d4e3f0;
+  --ot-primary:#1769bc;--ot-contrast:#ffffff;--ot-ring:#2b7dd4;
+  --ot-morning:#dceffb;--ot-afternoon:#ece9fb;--ot-off:#e8edf3;
+  background:var(--ot-bg)!important;
+  min-height:100%;color-scheme:light;
+}
+html[data-theme="dark"]{
+  --ot-bg:#071a2f;--ot-panel:#102844;--ot-panel-2:#15365c;
+  --ot-text:#f4f8fc;--ot-muted:#b8c7d9;--ot-border:#294766;
+  --ot-primary:#2787e1;--ot-contrast:#ffffff;--ot-ring:#6bc9ff;
+  --ot-morning:#124b70;--ot-afternoon:#403f70;--ot-off:#34485d;
+  background:var(--ot-bg)!important;
+  color-scheme:dark;
+}
+html,body{min-height:100%;background:var(--ot-bg)!important}
+body{
+  min-height:100vh;min-height:100dvh;
+  background:var(--ot-bg)!important;color:var(--ot-text)!important;
+}
+main{background:transparent!important;min-height:calc(100vh - 144px)}
+.page{background:transparent!important;min-height:0}
+.page.active{background:transparent!important}
+header{background:#0b2b4e!important;box-shadow:0 2px 12px #0002}
+html[data-theme="dark"] header{background:#09223d!important;box-shadow:0 2px 12px #0004}
+article{background:var(--ot-panel);color:var(--ot-text);border:1px solid var(--ot-border);box-shadow:0 3px 12px #001b3010}
+html[data-theme="dark"] article{background:var(--ot-panel)!important;color:var(--ot-text)!important;border-color:var(--ot-border)!important;box-shadow:0 3px 14px #0003}
+html[data-theme="dark"] .eyebrow,html[data-theme="dark"] .hint,html[data-theme="dark"] .muted,
+html[data-theme="dark"] .metrics span,html[data-theme="dark"] .barWrap,
+html[data-theme="dark"] .barWrap small,html[data-theme="dark"] .line span,
+html[data-theme="dark"] label,html[data-theme="dark"] .weekdays,
+html[data-theme="dark"] .legend{color:var(--ot-muted)!important}
+html[data-theme="dark"] h2,html[data-theme="dark"] h3,html[data-theme="dark"] strong,
+html[data-theme="dark"] .line b{color:var(--ot-text)}
+html[data-theme="dark"] .hero{
+  background:linear-gradient(132deg,#113456,#1e548b)!important;
+  border-color:#326391!important;color:#fff!important;
+}
+html[data-theme="dark"] .motivation{
+  background:linear-gradient(133deg,#104068,#176f94)!important;
+  border-color:#317da2!important;color:#fff!important;
+}
+html[data-theme="dark"] .motivation-top,html[data-theme="dark"] .motivation-note,
+html[data-theme="dark"] .motivation-autoplay{color:#dcf1ff!important}
+html[data-theme="dark"] .motivation-quote{color:#fff!important}
+html[data-theme="dark"] .payroll-takehome,
+html[data-theme="dark"] .breakdown,
+html[data-theme="dark"] .interval,
+html[data-theme="dark"] .shiftbox,
+html[data-theme="dark"] .tag{
+  background:var(--ot-panel-2)!important;color:var(--ot-text)!important;border-color:var(--ot-border)!important;
+}
+html[data-theme="dark"] .payroll-takehome strong,
+html[data-theme="dark"] .breakdown .total{color:#8fe8d1!important}
+html[data-theme="dark"] .line{border-bottom-color:var(--ot-border)!important}
+html[data-theme="dark"] .metrics article{background:var(--ot-panel)!important}
+html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea,
+html[data-theme="dark"] button:not(.primary):not(.motivation-arrow):not(.motivation-dot):not(.day):not([data-page]){
+  background:#193859!important;color:var(--ot-text)!important;border-color:#426182!important;
+}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder{color:#b8c7d9!important;opacity:1}
+html[data-theme="dark"] button.primary,html[data-theme="dark"] .primary{
+  background:var(--ot-primary)!important;border-color:var(--ot-primary)!important;color:#fff!important;
+}
+html[data-theme="dark"] button:focus-visible,html[data-theme="dark"] input:focus-visible,
+html[data-theme="dark"] select:focus-visible,html[data-theme="dark"] .day:focus-visible{
+  outline:3px solid var(--ot-ring)!important;outline-offset:2px
+}
+html[data-theme="dark"] .day{
+  background:var(--ot-panel)!important;color:var(--ot-text)!important;
+  border:1px solid var(--ot-border)!important;
+  transition:background-color .15s ease,border-color .15s ease;
+}
+html[data-theme="dark"] .day.p{background:var(--ot-morning)!important;border-color:#236a90!important}
+html[data-theme="dark"] .day.s{background:var(--ot-afternoon)!important;border-color:#6462a1!important}
+html[data-theme="dark"] .day.off{background:var(--ot-off)!important;border-color:#526981!important;color:#f4f8fc!important}
+html[data-theme="dark"] .day.empty{background:transparent!important;border:0!important}
+html[data-theme="dark"] .day.hasOT::after{color:#65ecbc!important;font-size:15px}
+html[data-theme="dark"] .day.selected{
+  outline:3px solid #83d8ff!important;outline-offset:-3px!important;
+  box-shadow:inset 0 0 0 1px #071a2f,0 0 0 2px #80d9ff40;
+}
+html[data-theme="dark"] nav{
+  background:#102844!important;color:var(--ot-text)!important;
+  border-top:1px solid var(--ot-border)!important;box-shadow:0 -5px 20px #0004;
+}
+html[data-theme="dark"] nav button{color:#c8d8ea!important}
+html[data-theme="dark"] nav button.selected{color:#81d2ff!important}
+html[data-theme="dark"] .bar{background:linear-gradient(#3cb7ec,#2672ba)!important}
+html[data-theme="dark"] fieldset{border-color:var(--ot-border)!important}
+html[data-theme="dark"] a{color:#91dcff}
+html[data-theme="dark"] .status{background:#205076;color:#eff8ff}
+@media(max-width:900px){
+ main{max-width:100%!important;width:100%!important;padding:14px 10px 28px!important}
+ .page.active{min-height:0}
+ .day{min-height:58px}
+ .day small{font-size:12px!important}
+ .legend{gap:12px;font-size:14px!important}
+ .weekdays{font-size:14px!important}
+ nav button span{font-size:15px!important}
+ .motivation{min-height:0!important}
+ .motivation-arrow{display:none!important}
+ .motivation-autoplay{font-size:14px!important}
+}
+@media print{
+ :root,html,body{background:#fff!important;color:#000!important;color-scheme:light}
+ article,html[data-theme="dark"] article{background:#fff!important;color:#000!important}
+}
