@@ -1,1 +1,0 @@
-{"name": "My OT Tracker", "short_name": "OT Tracker", "description": "Personal overtime and shift schedule tracker", "start_url": "./", "scope": "./", "display": "standalone", "background_color": "#071a2f", "theme_color": "#102a52", "lang": "en", "icons": [{"src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}]}
