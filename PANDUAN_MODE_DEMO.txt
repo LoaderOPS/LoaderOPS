@@ -1,0 +1,25 @@
+LOADER OPS – DSV | MODE DEMO 5 ROLE
+
+PENTING: Mode demo ini hanya untuk pengujian oleh satu akun admin. Semua role disimulasikan melalui akun Google admin yang terdaftar di Script Property ADMIN_EMAIL. Jangan gunakan untuk operasi live atau data sensitif.
+
+Paket berisi 3 file pengganti:
+1. Kode.gs
+2. Index.html (buat file HTML bernama Index, atau ganti isi Index yang sudah ada)
+3. LOADER_OPS_Tambahan_DRR.gs
+
+CARA PASANG:
+1. Simpan backup isi ketiga file Apps Script saat ini.
+2. Ganti isi file Kode.gs dengan Kode.gs dari paket ini.
+3. Ganti isi Index.html/Index dengan Index.html dari paket ini.
+4. Ganti isi LOADER_OPS_Tambahan_DRR.gs dengan file DRR dari paket ini.
+5. Pastikan Script Properties ADMIN_EMAIL tetap berisi email Google admin yang benar dan SPREADSHEET_ID tetap mengarah ke database yang benar.
+6. Simpan semua file. Deploy > Manage deployments > Edit deployment > New version > Deploy.
+7. PERTAHANKAN akses deployment: Hanya saya sendiri. Jangan ubah ke Anyone / siapa saja.
+8. Buka URL /exec, pilih Admin / SPV / Mijan / Ompong / Safar.
+
+CATATAN DEMO:
+- Pilihan role disimpan pada User Cache sementara (maksimum 6 jam) untuk akun admin yang sama.
+- Mijan = Team A; Ompong = Team B; Safar = Team C.
+- Input yang dibuat pada mode demo akan tersimpan ke sheet ACTIVITIES dengan CREATED_BY email admin yang sama. Gunakan hanya data dummy.
+- SPV hanya melihat dashboard/riwayat/billing. Loader hanya dapat input dan melihat riwayat team masing-masing. Admin memiliki akses penuh.
+- Sebelum go-live, ubah const DEMO_MODE = true menjadi false, lalu gunakan autentikasi akun Google masing-masing dan akses deployment yang disetujui IT.

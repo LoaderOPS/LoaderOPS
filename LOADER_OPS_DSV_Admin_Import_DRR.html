@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LOADER OPS – Prototype</title>
+<style>
+:root{--navy:#14284b;--bg:#f3f5f9;--card:#fff;--tx:#1b2433;--mu:#6b7686;--bd:#dde2ea;--ok:#1a8f4c;--bad:#d03a3a;--warn:#c98a10;--acc:#2a5db0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root:not([data-theme="light"]){color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1521;--card:#18202f;--tx:#e6ebf4;--mu:#97a3b6;--bd:#2a3447;--navy:#0b1730;--acc:#6f9bea}}
+:root[data-theme="dark"]{--bg:#0f1521;--card:#18202f;--tx:#e6ebf4;--mu:#97a3b6;--bd:#2a3447;--navy:#0b1730;--acc:#6f9bea;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;font:14px/1.45 system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--tx)}
+.app{display:flex;min-height:100vh}
+aside{width:220px;background:var(--navy);color:#fff;padding:16px 12px;flex-shrink:0}
+aside h1{font-size:16px;margin:0 0 2px}aside small{color:#9fb0cf;display:block;margin-bottom:14px}
+aside a{display:block;padding:9px 10px;border-radius:8px;color:#cfd9ee;cursor:pointer;margin-bottom:2px}
+aside a.on,aside a:hover{background:rgba(255,255,255,.14);color:#fff}
+aside select{width:100%;margin-bottom:14px}
+main{flex:1;padding:18px;min-width:0}
+h2{margin:0 0 4px;font-size:20px}.sub{color:var(--mu);margin-bottom:14px}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:600;background:var(--bd);color:var(--tx)}
+.b-ok{background:#d6f1e1;color:#12683a}.b-bad{background:#fadcdc;color:#a52a2a}.b-warn{background:#fbecc8;color:#7d5608}.b-sim{background:#e3e9f6;color:#1f3f7a}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}
+.kpi .n{font-size:26px;font-weight:700}.kpi .l{color:var(--mu);font-size:12px}
+.kpi.red .n{color:var(--bad)}.kpi.grn .n{color:var(--ok)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:640px}
+th,td{text-align:left;padding:8px;border-bottom:1px solid var(--bd);white-space:nowrap}th{color:var(--mu);font-size:12px}
+tr.bad td{background:rgba(208,58,58,.1)}tr.can td{opacity:.45;text-decoration:line-through}
+input,select,textarea,button{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:9px}
+button{cursor:pointer}button.p{background:var(--navy);color:#fff;border-color:var(--navy)}button.s{padding:4px 8px;font-size:12px}
+.f{display:grid;gap:10px}.f label{display:grid;gap:4px;font-size:12px;color:var(--mu)}
+.big{width:100%;padding:16px;font-size:17px;font-weight:700}
+.bar{display:flex;align-items:center;gap:8px;margin:7px 0}.bar span.t{width:70px;color:var(--mu);font-size:12px}
+.bar i{display:block;height:18px;border-radius:4px;background:var(--acc)}
+.bar i.o{background:#7fa6e6}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ok);color:#fff;padding:12px 18px;border-radius:10px;display:none;z-index:9}
+@media(max-width:760px){.app{flex-direction:column}aside{width:100%;display:flex;flex-wrap:wrap;gap:4px;align-items:center}aside h1,aside small,aside select{width:100%}aside a{margin:0}}
+</style></head><body>
+<div class="app">
+<aside><h1>LOADER OPS</h1><small>Loader Activity Monitoring</small>
+<select id="role"></select><nav id="nav"></nav></aside>
+<main id="main"></main></div><div id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const CUTOFF_HOUR=6; // PLACEHOLDER: konfirmasi jam cut-off shift perusahaan
+let seq=6,busy=false;
+let D=[["2026-11-02","A","IN","B 9075 KXV",280,280],["2026-11-02","A","IN","B 9163 UEM",190,185],["2026-11-02","B","OUT","HCLU1234567",800,null],["2026-11-02","B","IN","B 1234 AAZ",45,null],["2026-11-02","C","OUT","CAAU3344557",650,650],["2026-11-02","C","OUT","HPCU1167626",435,null]]
+.map((r,i)=>({id:"TRX-"+String(i+1).padStart(4,"0"),d:r[0],t:"08:00",team:r[1],type:r[2],ref:r[3],ctn:r[4],rf:r[5],cust:"",note:"",ok:false,can:false,fu:"",sim:true,by:"Loader "+r[1],log:[]}));
+let view="dash",role="ADMIN",F={team:"",type:"",st:"",q:""};
+const $=s=>document.querySelector(s),fmt=n=>n.toLocaleString("id-ID");
+const roles=["ADMIN","Loader A","Loader B","Loader C"];
+$("#role").innerHTML=roles.map(r=>`<option>${r}</option>`).join("");
+$("#role").onchange=e=>{role=e.target.value;view=role=="ADMIN"?"dash":"input";nav();render()};
+const adminNav=[["dash","Dashboard"],["input","Input Activity"],["hist","Activity History"],["drr","Import DRR"],["bill","Weekly Billing Summary"],["disc","Discrepancy Monitoring"],["users","User Management"]];
+function nav(){const l=role=="ADMIN"?adminNav:adminNav.slice(1,3);$("#nav").innerHTML=l.map(([k,v])=>`<a class="${k==view?"on":""}" onclick="go('${k}')">${v}</a>`).join("")}
+function go(v){view=v;nav();render()}
+function status(x){if(x.can)return"Dibatalkan";if(x.ok)return"Disetujui";if(hasMaster(x)&&masterMatch(x).flag!=="match")return"DRR Belum Cocok";if(refCTN(x)==null)return"Belum Diperiksa";return refCTN(x)==x.ctn?"Sesuai":"Discrepancy"}
+const bc=s=>({Sesuai:"b-ok",Disetujui:"b-ok",Discrepancy:"b-bad","Belum Diperiksa":"b-warn","DRR Belum Cocok":"b-warn"}[s]||"");
+function period(d,t){const dt=new Date(d+"T"+t);let off=(dt.getDay()+2)%7;// days since Friday
+const h=dt.getHours();if(off==0&&h<CUTOFF_HOUR)off=7;const s=new Date(dt);s.setDate(s.getDate()-off);const e=new Date(s);e.setDate(e.getDate()+6);const f=x=>x.toISOString().slice(0,10);return f(s)+" s/d "+f(e)}
+function live(){return D.filter(x=>!x.can)}
+function filt(){return D.filter(x=>(!F.team||x.team==F.team)&&(!F.type||x.type==F.type)&&(!F.st||status(x)==F.st)&&(!F.q||x.ref.toLowerCase().includes(F.q.toLowerCase())))}
+function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";setTimeout(()=>t.style.display="none",2600)}
+function filterBar(){return `<div class="filters"><select onchange="F.team=this.value;render()"><option value="">Semua Tim</option>${["A","B","C"].map(t=>`<option ${F.team==t?"selected":""}>${t}</option>`).join("")}</select>
+<select onchange="F.type=this.value;render()"><option value="">In/Out</option><option value="IN" ${F.type=="IN"?"selected":""}>Inbound</option><option value="OUT" ${F.type=="OUT"?"selected":""}>Outbound</option></select>
+<select onchange="F.st=this.value;render()"><option value="">Semua Status</option>${["Belum Diperiksa","Sesuai","Discrepancy","Disetujui","Dibatalkan"].map(s=>`<option ${F.st==s?"selected":""}>${s}</option>`).join("")}</select>
+<input placeholder="Cari no. mobil/container" value="${F.q}" onchange="F.q=this.value;render()"></div>`}
+function render(){const m=$("#main");({dash,input,hist,drr,bill,disc,users}[view])(m)}
+function dash(m){const L=live(),I=L.filter(x=>x.type=="IN"),O=L.filter(x=>x.type=="OUT"),s=a=>a.reduce((n,x)=>n+x.ctn,0);
+const pend=L.filter(x=>!x.ok&&status(x)=="Belum Diperiksa").length,dis=L.filter(x=>["Discrepancy","DRR Belum Cocok"].includes(status(x))).length;
+const k=(l,n,c="")=>`<div class="card kpi ${c}"><div class="n">${fmt(n)}</div><div class="l">${l}</div></div>`;
+const tm=["A","B","C"].map(t=>{const a=L.filter(x=>x.team==t);return{t,i:a.filter(x=>x.type=="IN").length,o:a.filter(x=>x.type=="OUT").length,c:s(a)}});
+const mx=Math.max(1,...tm.map(x=>x.c));const days=[...new Set(L.map(x=>x.d))].sort();
+m.innerHTML=`<h2>Operational Overview <span class="badge b-sim">Demo Data</span></h2><div class="sub">Periode billing aktif: ${period("2026-11-02","10:00")} (cut-off ${CUTOFF_HOUR}:00 = placeholder)</div>
+<div class="grid">${k("Total Mobil Inbound",I.length)}${k("Total Container Outbound",O.length)}${k("Carton Inbound",s(I))}${k("Carton Outbound",s(O))}${k("Total Carton",s(L))}${k("Total Aktivitas",L.length)}${k("Belum Diverifikasi",pend)}${k("Discrepancy",dis,dis?"red":"grn")}</div>
+<div class="two"><div class="card"><b>Carton Handled by Team</b>${tm.map(x=>`<div class="bar"><span class="t">Team ${x.t}</span><i style="width:${x.c/mx*70}%"></i>${fmt(x.c)}</div>`).join("")}</div>
+<div class="card"><b>Aktivitas per Tanggal</b>${days.map(d=>{const a=L.filter(x=>x.d==d);const i=a.filter(x=>x.type=="IN").length,o=a.length-i;return`<div class="bar"><span class="t">${d.slice(5)}</span><i style="width:${i*40}px"></i>${i} In<i class="o" style="width:${o*40}px"></i>${o} Out</div>`}).join("")}<small style="color:var(--mu)">Grafik tren harian/mingguan/bulanan: di versi final.</small></div></div>
+<div class="card"><b>Per Team</b><div class="wrap"><table><tr><th>Team</th><th>Inbound</th><th>Outbound</th><th>CTN</th></tr>${tm.map(x=>`<tr><td>Team ${x.t}</td><td>${x.i}</td><td>${x.o}</td><td>${fmt(x.c)}</td></tr>`).join("")}</table></div></div>
+<div class="card"><b>Aktivitas Terbaru</b>${tbl(D.slice(-6).reverse())}</div>`}
+function tbl(a){return `<div class="wrap"><table><tr><th>ID</th><th>Tanggal</th><th>Team</th><th>Jenis</th><th>No. Ref</th><th>CTN</th><th>Status</th></tr>${a.map(x=>`<tr class="${x.can?"can":status(x)=="Discrepancy"?"bad":""}"><td>${x.id}${x.sim?' <span class="badge b-sim">SIM</span>':""}</td><td>${x.d} ${x.t}</td><td>${x.team}</td><td>${x.type=="IN"?"Inbound":"Outbound"}</td><td>${x.ref}</td><td>${fmt(x.ctn)}</td><td><span class="badge ${bc(status(x))}">${status(x)}</span></td></tr>`).join("")}</table></div>`}
+function input(m){const tm=role=="ADMIN"?"A":role.slice(-1),now=new Date();
+m.innerHTML=`<h2>Input Activity</h2><div class="sub">Form untuk loader (HP)</div><div class="card"><div class="f" style="max-width:520px">
+<label>Tanggal<input type="date" id="fd" value="${now.toISOString().slice(0,10)}"></label>
+<label>Jam<input type="time" id="ft" value="${now.toTimeString().slice(0,5)}"></label>
+<label>Team<select id="fteam" ${role!="ADMIN"?"disabled":""}>${["A","B","C"].map(t=>`<option ${t==tm?"selected":""}>${t}</option>`).join("")}</select></label>
+<label>Jenis<select id="ftype" onchange="lbl()"><option value="IN">Inbound (bongkar mobil)</option><option value="OUT">Outbound (muat container)</option></select></label>
+<label id="lref">Nomor Polisi Mobil *<input id="fref" placeholder="B 1234 ABC"></label>
+<label>Jumlah CTN *<input id="fctn" type="number" min="1" step="1" inputmode="numeric"></label>
+<label>Customer (opsional)<input id="fcust"></label><label>Keterangan (opsional)<textarea id="fnote" rows="2"></textarea></label>
+<div id="err" style="color:var(--bad)"></div><button class="p big" onclick="save()">Simpan Aktivitas</button></div></div>
+<div class="card"><b>Riwayat Tim ${tm}</b>${tbl(D.filter(x=>x.team==tm).slice(-8).reverse())}</div>`}
+function lbl(){$("#lref").firstChild.textContent=$("#ftype").value=="IN"?"Nomor Polisi Mobil *":"Nomor Container *"}
+function save(){if(busy)return;const ref=$("#fref").value.trim(),c=+$("#fctn").value;
+if(!ref)return $("#err").textContent="Nomor mobil/container wajib diisi.";
+if(!Number.isInteger(c)||c<1)return $("#err").textContent="CTN harus bilangan bulat positif.";
+const team=$("#fteam").value,d=$("#fd").value;
+if(D.some(x=>!x.can&&x.d==d&&x.ref.toLowerCase()==ref.toLowerCase()&&x.ctn==c&&x.type==$("#ftype").value)&&!confirm("Transaksi serupa sudah ada hari ini. Tetap simpan?"))return;
+busy=true;const id="TRX-"+String(++seq).padStart(4,"0");
+D.push({id,d,t:$("#ft").value,team,type:$("#ftype").value,ref,ctn:c,rf:null,cust:$("#fcust").value,note:$("#fnote").value,ok:false,can:false,fu:"",sim:false,by:role,log:[{w:role,a:"dibuat"}]});
+setTimeout(()=>{busy=false},800);toast("Tersimpan! ID: "+id);render()}
+function hist(m){const a=role=="ADMIN"?filt():D.filter(x=>x.team==role.slice(-1));
+m.innerHTML=`<h2>Activity History</h2><div class="sub">Transaksi tidak dihapus permanen, hanya dibatalkan.</div>${role=="ADMIN"?filterBar():""}<div class="card"><div class="wrap"><table><tr><th>ID</th><th>Tgl</th><th>Team</th><th>Jenis</th><th>No. Ref</th><th>CTN</th><th>Status</th><th>Aksi</th></tr>
+${a.map(x=>`<tr class="${x.can?"can":""}"><td>${x.id}</td><td>${x.d}</td><td>${x.team}</td><td>${x.type}</td><td>${x.ref}</td><td>${x.ctn}</td><td>${status(x)}</td><td>${role=="ADMIN"&&!x.can?`<button class="s" onclick="edit('${x.id}')">Ubah</button> <button class="s" onclick="cancel('${x.id}')">Batalkan</button>`:""}</td></tr>`).join("")}</table></div></div>`}
+function get(id){return D.find(x=>x.id==id)}
+function edit(id){const x=get(id),v=prompt("CTN baru:",x.ctn);if(v==null)return;const n=+v;if(!Number.isInteger(n)||n<1)return toast("CTN tidak valid");const r=prompt("Alasan perubahan (wajib):");if(!r)return;x.log.push({w:"Admin",a:`CTN ${x.ctn} → ${n}: ${r}`});x.ctn=n;render()}
+function cancel(id){const r=prompt("Alasan pembatalan (wajib):");if(!r)return;const x=get(id);x.can=true;x.log.push({w:"Admin",a:"dibatalkan: "+r});render()}
+function bill(m){const a=filt().filter(x=>!x.can&&weekOf(x.d,x.t)===activeWeek),s=(l,t)=>a.filter(l).reduce((n,x)=>n+x.ctn,0);
+m.innerHTML=`<h2>Weekly Billing Summary</h2><div class="sub">Periode: Jumat pagi – Kamis malam. Data dibatalkan tidak dihitung.</div>${weekSelector()}<div class="card"><b>Master DRR: </b>${DRR.filter(z=>z.week===activeWeek).length} baris. <button onclick="go('drr')">Import / Kelola DRR</button><p style="font-size:12px">CTN DRR dipakai sebagai sumber pembanding bila master tersedia.</p></div>${filterBar()}
+<div class="grid">${["A","B","C"].map(t=>`<div class="card kpi"><div class="n">${fmt(s(x=>x.team==t))}</div><div class="l">CTN Team ${t}</div></div>`).join("")}<div class="card kpi"><div class="n">${new Set(a.map(x=>x.ref)).size}</div><div class="l">Unit unik</div></div><div class="card kpi"><div class="n">${a.length}</div><div class="l">Aktivitas</div></div></div>
+<div class="card"><div class="wrap"><table><tr><th>Tanggal</th><th>Team</th><th>Jenis</th><th>No. Ref</th><th>CTN Loader</th><th>CTN DRR / Ref</th><th>Selisih</th><th>Status</th><th>Tindak lanjut</th><th></th></tr>
+${a.map(x=>{const st=status(x);return`<tr class="${st=="Discrepancy"?"bad":""}"><td>${x.d}</td><td>${x.team}</td><td>${x.type}</td><td>${x.ref}</td><td>${x.ctn}</td><td><input type="number" style="width:80px;padding:4px" value="${refCTN(x)??""}" ${hasMaster(x)?"disabled title='CTN dari master DRR'":""} onchange="setRf('${x.id}',this.value)"></td><td>${refCTN(x)==null?"–":x.ctn-refCTN(x)}</td><td><span class="badge ${bc(st)}">${st}</span></td><td>${x.fu||""}</td><td><button class="s" onclick="verify('${x.id}')">Verifikasi</button></td></tr>`}).join("")}</table></div>
+<p style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px"><button class="p" onclick="expXlsx()">⬇ Export Excel (.xlsx)</button><button onclick="expCsv()">Export CSV</button><button onclick="expCopy()">📋 Salin untuk Google Sheets</button><a href="https://sheets.new" target="_blank" rel="noopener"><button>Buka Google Sheets baru</button></a></p><small style="color:var(--mu)">Mengikuti filter aktif. Transaksi dibatalkan tidak diekspor. Di Google Sheets: klik sel A1 lalu Ctrl+V.</small></div>`}
+function setRf(id,v){const x=get(id);if(hasMaster(x))return toast("CTN berasal dari DRR; perubahan dilakukan melalui import master.");x.rf=v===""?null:+v;x.ok=false;render()}
+function verify(id){const x=get(id);if(refCTN(x)==null)return toast("CTN DRR atau referensi belum ditemukan");if(x.ctn!==refCTN(x))return toast("CTN berbeda; selesaikan discrepancy sebelum persetujuan");const n=prompt("Catatan tindak lanjut (opsional):","")||"";x.ok=true;x.fu=n;x.log.push({w:"Admin",a:"disetujui "+n});render()}
+function disc(m){const a=D.filter(x=>weekOf(x.d,x.t)===activeWeek&&["Discrepancy","DRR Belum Cocok"].includes(status(x)));m.innerHTML=`<h2>Discrepancy Monitoring</h2><div class="sub">${a.length} transaksi selisih CTN</div><div class="card">${a.length?tbl(a):"Tidak ada discrepancy."}${a.map(x=>`<p><b>${x.id}</b> Team ${x.team}: selisih ${refCTN(x)==null?"Tidak ditemukan pasangan DRR":x.ctn-refCTN(x)+" CTN"} (Loader ${x.ctn} vs Ref ${refCTN(x)??"-"})</p>`).join("")}</div>`}
+function users(m){m.innerHTML=`<h2>User Management</h2><div class="sub">Prototype: autentikasi nyata dibuat setelah desain disetujui.</div><div class="card"><div class="wrap"><table><tr><th>Pengguna</th><th>Role</th><th>Akses</th></tr><tr><td>Loader Team A</td><td>Loader</td><td>Input & riwayat Team A</td></tr><tr><td>Loader Team B</td><td>Loader</td><td>Input & riwayat Team B</td></tr><tr><td>Loader Team C</td><td>Loader</td><td>Input & riwayat Team C</td></tr><tr><td>Admin</td><td>Admin</td><td>Semua fitur</td></tr></table></div></div>`}
+const HEAD=["Tanggal","Jam","Team","Jenis","No. Mobil/Container","Customer","CTN Loader","CTN Referensi","Selisih","Status","Tindak Lanjut","ID"];
+function rows(){return [HEAD,...filt().filter(x=>!x.can&&weekOf(x.d,x.t)===activeWeek).map(x=>[x.d,x.t,"Team "+x.team,x.type=="IN"?"Inbound":"Outbound",x.ref,x.cust||"",x.ctn,refCTN(x)==null?"":refCTN(x),refCTN(x)==null?"":x.ctn-refCTN(x),status(x),x.fu||"",x.id])]}
+function summ(){const a=filt().filter(x=>!x.can&&weekOf(x.d,x.t)===activeWeek),r=[["Team","Aktivitas","Unit unik","CTN Inbound","CTN Outbound","Total CTN"]];["A","B","C"].forEach(t=>{const b=a.filter(x=>x.team==t),c=ty=>b.filter(x=>x.type==ty).reduce((n,x)=>n+x.ctn,0);r.push(["Team "+t,b.length,new Set(b.map(x=>x.ref)).size,c("IN"),c("OUT"),c("IN")+c("OUT")])});return r}
+function fn(){return "LoaderOps_Billing_"+activeWeek}
+async function dl(name,blob){try{if(typeof claude!="undefined"){const d=await claude.use("downloads");if(d){await d.save({filename:name,data:blob});return}}}catch(e){if(e&&e.code=="declined")return}
+const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}
+function expCsv(){const q=v=>'"'+String(v).replace(/"/g,'""')+'"';dl(fn()+".csv",new Blob(["\ufeff"+rows().map(r=>r.map(q).join(",")).join("\r\n")],{type:"text/csv;charset=utf-8"}))}
+function expXlsx(){if(typeof XLSX=="undefined"){toast("Library Excel gagal dimuat, memakai CSV");return expCsv()}
+const wb=XLSX.utils.book_new(),w1=XLSX.utils.aoa_to_sheet(rows());w1["!cols"]=[12,8,10,10,20,16,11,13,9,16,24,10].map(w=>({wch:w}));XLSX.utils.book_append_sheet(wb,w1,"Billing");XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(summ()),"Ringkasan Team");
+dl(fn()+".xlsx",new Blob([XLSX.write(wb,{bookType:"xlsx",type:"array"})],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}))}
+async function expCopy(){const t=rows().map(r=>r.join("\t")).join("\n");try{await navigator.clipboard.writeText(t);toast("Tersalin! Buka Google Sheets, klik A1, lalu Ctrl+V")}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand("copy")}catch(_){}ta.remove();toast(ok?"Tersalin! Tempel di Google Sheets (Ctrl+V)":"Gagal menyalin, gunakan Export CSV")}}
+// DRR MASTER MODULE — prototype; browser-only storage, not shared database.
+const DKEY='LOADER_OPS_DRR_WEEKLY_V2';
+let DRR=(()=>{try{return JSON.parse(localStorage.getItem(DKEY)||'[]')}catch(e){return []}})();
+let activeWeek='2026-10-30',pending=null;
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function norm(v){return String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'')}
+function dayStr(x){return [x.getFullYear(),String(x.getMonth()+1).padStart(2,'0'),String(x.getDate()).padStart(2,'0')].join('-')}
+function weekOf(d,t='12:00'){const a=String(d).split('-').map(Number),v=new Date(a[0],a[1]-1,a[2]);let back=(v.getDay()+2)%7;if(!back&&Number(String(t).slice(0,2))<CUTOFF_HOUR)back=7;v.setDate(v.getDate()-back);return dayStr(v)}
+function weekSelector(){return `<div class="card"><b>Mulai minggu billing (Jumat): </b><input type="date" value="${activeWeek}" onchange="activeWeek=weekOf(this.value,'12:00');render()"> <span class="badge b-sim">${activeWeek} — +6 hari</span></div>`}
+function masterMatch(x){const same=DRR.filter(r=>r.week===weekOf(x.d,x.t)&&r.key===norm(x.ref)&&(!r.type||r.type===x.type)&&(!r.date||r.date===x.d));return same.length===1?{value:same[0].ctn,flag:'match'}:same.length>1?{value:null,flag:'ambiguous'}:{value:null,flag:'missing'}}
+function hasMaster(x){return DRR.some(r=>r.week===weekOf(x.d,x.t))}
+function refCTN(x){return hasMaster(x)?masterMatch(x).value:x.rf}
+function normDate(v){if(v instanceof Date&&!isNaN(v))return dayStr(v);if(typeof v==='number'&&v>20000&&v<80000)return new Date(Date.UTC(1899,11,30)+Math.round(v)*86400000).toISOString().slice(0,10);const s=String(v||'').trim();let m;if(!s)return'';if(m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/))return m[1]+'-'+m[2].padStart(2,'0')+'-'+m[3].padStart(2,'0');if(m=s.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/))return m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');return''}
+function normType(v){const s=String(v||'').toUpperCase().trim();if(['IN','INBOUND','BONGKAR'].includes(s))return'IN';if(['OUT','OUTBOUND','MUAT'].includes(s))return'OUT';return''}
+function drr(m){const rows=DRR.filter(x=>x.week===activeWeek);m.innerHTML=`<h2>Import DRR — Master Mingguan</h2><div class="sub">DRR adalah data referensi CTN untuk pengecekan billing, bukan transaksi loader.</div>${weekSelector()}<div class="card"><h3>1. Upload DRR</h3><p>Pilih periode Jumat–Kamis di atas, kemudian impor file Excel/CSV. Minimal ada kolom nomor mobil/container dan jumlah CTN. Tanggal dan jenis aktivitas disarankan untuk pencocokan akurat.</p><input type="file" accept=".xlsx,.xls,.csv" onchange="readDRR(this.files[0])"><div id="preview" style="margin-top:12px"></div></div><div class="card"><h3>2. Master DRR periode ini — ${rows.length} baris</h3><div class="wrap"><table><tr><th>Tanggal</th><th>Jenis</th><th>No. Mobil / Container</th><th>CTN DRR</th></tr>${rows.slice(0,100).map(x=>`<tr><td>${esc(x.date||'—')}</td><td>${esc(x.type||'—')}</td><td>${esc(x.ref)}</td><td>${x.ctn}</td></tr>`).join('')}</table></div><p><button ${rows.length?'':'disabled'} onclick="clearDRR()">Hapus master periode ini</button> <button onclick="go('bill')">Lihat rekap billing</button></p></div><div class="card" style="border-left:4px solid var(--warn)"><b>DEMO:</b> data master tersimpan hanya dalam browser ini, tidak otomatis tersinkron ke perangkat lain. Belum untuk billing resmi.</div>`}
+async function readDRR(file){if(!file)return;const e=document.querySelector('#preview');e.textContent='Membaca file...';try{if(typeof XLSX==='undefined')throw Error('Library Excel tidak tersedia; sambungkan internet lalu buka ulang aplikasi.');const book=XLSX.read(await file.arrayBuffer(),{type:'array',cellDates:true});pending={name:file.name,book,sheet:book.SheetNames[0]};drawPreview()}catch(err){e.textContent='File tidak dapat dibaca: '+err.message}}
+function drawPreview(){const p=pending;if(!p)return;const arr=XLSX.utils.sheet_to_json(p.book.Sheets[p.sheet],{header:1,defval:''});p.arr=arr;const heads=arr[0]||[],items=['ref','ctn','date','type'],labels=['Nomor Mobil/Container *','CTN DRR *','Tanggal (opsional)','Inbound/Outbound (opsional)'];const suggestions={ref:/mobil|container|unit|reference|referensi|polisi/i,ctn:/ctn|karton|carton|quantity|qty|jumlah/i,date:/tgl|tanggal|date/i,type:/type|jenis|aktivitas|activity/i};const mapping=items.map((k,j)=>`<label>${labels[j]}<select id="map_${k}"><option value="">-- pilih kolom --</option>${heads.map((v,i)=>`<option value="${i}" ${suggestions[k].test(String(v))?'selected':''}>${esc(v||'Kolom '+(i+1))}</option>`).join('')}</select></label>`).join('');document.querySelector('#preview').innerHTML=`<b>${esc(p.name)}</b> — ${Math.max(0,arr.length-1)} baris<div class="f" style="grid-template-columns:repeat(auto-fit,minmax(175px,1fr));margin:10px 0">${p.book.SheetNames.length>1?`<label>Sheet<select onchange="pending.sheet=this.value;drawPreview()">${p.book.SheetNames.map(n=>`<option ${n===p.sheet?'selected':''}>${esc(n)}</option>`).join('')}</select></label>`:''}${mapping}</div><div class="wrap"><table><tr>${heads.map(h=>`<th>${esc(h)}</th>`).join('')}</tr>${arr.slice(1,5).map(r=>`<tr>${heads.map((_,i)=>`<td>${esc(r[i] instanceof Date?dayStr(r[i]):r[i])}</td>`).join('')}</tr>`).join('')}</table></div><p><button class="p" onclick="commitDRR()">Import master DRR</button></p><p id="importError" style="color:var(--bad)"></p>`}
+function commitDRR(){if(!pending)return;const ids={};for(const k of ['ref','ctn','date','type'])ids[k]=document.querySelector('#map_'+k).value;if(ids.ref===''||ids.ctn==='')return document.querySelector('#importError').textContent='Pilih kolom nomor mobil/container dan CTN.';const result=[],issues=[];pending.arr.slice(1).forEach((r,i)=>{const ref=String(r[+ids.ref]||'').trim(),raw=r[+ids.ctn];if(!ref&&!String(raw||'').trim())return;const c=typeof raw==='number'?raw:Number(String(raw).replace(/\s/g,'').replace(/,/g,''));const date=ids.date===''?'':normDate(r[+ids.date]);const type=ids.type===''?'':normType(r[+ids.type]);if(!norm(ref)||!Number.isInteger(c)||c<0){issues.push('Baris '+(i+2)+' memiliki nomor atau CTN tidak valid');return}if(ids.date!==''&&String(r[+ids.date]||'').trim()&&!date){issues.push('Tanggal baris '+(i+2)+' tidak dikenali');return}if(ids.type!==''&&String(r[+ids.type]||'').trim()&&!type){issues.push('Jenis baris '+(i+2)+' tidak dikenali');return}if(date&&weekOf(date,'12:00')!==activeWeek){issues.push('Tanggal baris '+(i+2)+' di luar periode');return}result.push({week:activeWeek,date,type,ref,key:norm(ref),ctn:c})});if(issues.length)return document.querySelector('#importError').textContent=issues.slice(0,5).join('; ');if(!result.length)return document.querySelector('#importError').textContent='Tidak ada data valid.';if(DRR.some(x=>x.week===activeWeek)&&!confirm('Timpa master DRR untuk minggu ini?'))return;DRR=DRR.filter(x=>x.week!==activeWeek).concat(result);try{localStorage.setItem(DKEY,JSON.stringify(DRR))}catch(e){toast('Penyimpanan browser penuh atau diblokir')}D.forEach(x=>{if(weekOf(x.d,x.t)===activeWeek)x.ok=false});toast('Master DRR diimpor: '+result.length+' baris');pending=null;render()}
+function clearDRR(){if(!confirm('Hapus master DRR periode ini?'))return;DRR=DRR.filter(x=>x.week!==activeWeek);try{localStorage.setItem(DKEY,JSON.stringify(DRR))}catch(e){}render()}
+
+nav();render();
+</script></body></html>
