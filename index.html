@@ -1,6 +1,5 @@
 
 <!DOCTYPE html>
-<!-- LoaderOPS Original Dashboard Restored -->
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -240,6 +239,9 @@ hr {
   .panel,.kpi { box-shadow:none; }
 }
 </style>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#12345a">
+<link rel="apple-touch-icon" href="./icon-192.png">
 </head>
 
 <body>
@@ -432,10 +434,10 @@ function loaderName(id) {
 
 function allowedPages() {
   if(isAdmin())
-    return ["dashboard","master","activities","reports","audit"];
+    return ["dashboard","master","activities","reconciliation","reports","audit"];
 
   if(isSPV())
-    return ["dashboard","activities","reports","audit"];
+    return ["dashboard","activities","reconciliation","reports","audit"];
 
   if(isLoader())
     return ["activities"];
@@ -555,15 +557,23 @@ sb.auth.onAuthStateChange((event)=>{
    5. LOAD DATABASE
 ================================================ */
 
+async function fetchAllRows(table,columns="*") {
+  const data=[];let offset=0;
+  while(true){const r=await sb.from(table).select(columns).order("id",{ascending:true}).range(offset,offset+499);if(r.error)return r;if(!r.data?.length)break;data.push(...r.data);offset+=r.data.length;}
+  if(["inbound_activities","outbound_activities"].includes(table))data.sort((a,b)=>b.activity_date.localeCompare(a.activity_date));
+  if(table==="excel_uploads")data.sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));
+  return {data,error:null};
+}
+
 async function loadAll() {
   setSync("Loading database...");
 
   const tasks=[
-    sb.from("profiles").select("id,full_name,username,role,is_active"),
-    sb.from("inbound_activities").select("*").order("activity_date",{ascending:false}),
-    sb.from("outbound_activities").select("*").order("activity_date",{ascending:false}),
-    sb.from("excel_reference_rows").select("*"),
-    sb.from("excel_uploads").select("*").order("created_at",{ascending:false})
+    fetchAllRows("profiles","id,full_name,username,role,is_active"),
+    fetchAllRows("inbound_activities"),
+    fetchAllRows("outbound_activities"),
+    fetchAllRows("excel_reference_rows"),
+    fetchAllRows("excel_uploads")
   ];
 
   const results=await Promise.all(tasks);
@@ -664,6 +674,7 @@ function navigate(page) {
     dashboard:"📊 Dashboard",
     master:"📁 Upload Master Data",
     activities:"📋 Aktivitas Loader",
+    reconciliation:"🔎 Reconciliation",
     reports:"📈 Laporan",
     audit:"🕒 Audit Log"
   };
@@ -683,6 +694,7 @@ function render() {
   if(currentPage==="dashboard")renderDashboard();
   if(currentPage==="master")renderMaster();
   if(currentPage==="activities")renderActivities();
+  if(currentPage==="reconciliation")renderReconciliation();
   if(currentPage==="reports")renderReports();
   if(currentPage==="audit")renderAudit();
 }
@@ -794,6 +806,30 @@ function kpi(name,value,sub) {
   `;
 }
 
+let reconFilter={start:'',end:'',type:'all',status:'all',search:''};
+function reconciliationRows(start='',end='',type='all') {
+  const groups=new Map();
+  function add(date,t,number,qty,isMaster,loader) {
+    if(!date||!t||(start&&date<start)||(end&&date>end)||(type!=='all'&&type!==t))return;
+    const key=JSON.stringify([date,t,norm(number)]);
+    if(!groups.has(key))groups.set(key,{date,type:t,number,expected:0,actual:0,refs:0,inputs:0,loaders:new Set()});
+    const g=groups.get(key);
+    if(isMaster){g.expected+=Number(qty||0);g.refs++;}else{g.actual+=Number(qty||0);g.inputs++;if(loader)g.loaders.add(loaderName(loader));}
+  }
+  master.forEach(m=>{const t=activityType(m);add(m.activity_date,t,t==='INBOUND'?m.vehicle_number:m.container_number||m.vehicle_number,m.total_carton,true);});
+  allActivities().forEach(a=>add(a.activity_date,a.type,a.number,a.total_carton,false,a.loader_id));
+  return [...groups.values()].map(g=>({...g,short:g.refs?Math.max(g.expected-g.actual,0):0,extra:Math.max(g.actual-g.expected,0),status:!g.refs?'Di Luar Master':!g.inputs?'Belum Input':g.actual<g.expected?'Parsial':g.actual>g.expected?'Kelebihan':'Selesai'})).sort((a,b)=>b.date.localeCompare(a.date)||a.type.localeCompare(b.type)||String(a.number).localeCompare(String(b.number)));
+}
+function reconciliationTotals(rows){return rows.reduce((s,r)=>{s.expected+=r.expected;s.actual+=r.actual;s.short+=r.short;s.extra+=r.extra;s.matched+=r.refs?Math.min(r.actual,r.expected):0;s.missing+=r.status==='Belum Input'?1:0;return s;},{expected:0,actual:0,short:0,extra:0,matched:0,missing:0});}
+function reconciliationCards(rows){const s=reconciliationTotals(rows);return `<div class="cards">${kpi('Total Master Carton',s.expected,'Carton')}${kpi('Total Input Loader',s.actual,'Semua loader')}${kpi('Outstanding Carton',s.short,'Kekurangan per mobil/container')}${kpi('Kelebihan / Di Luar Master',s.extra,'Carton')}${kpi('Selisih Bersih',s.expected-s.actual,'Master dikurangi aktual')}${kpi('Belum Input',s.missing,'Mobil/container per tanggal & jenis') }<div class="kpi"><div class="name">Completion Rate (Qty)</div><div class="value">${s.expected?(100*s.matched/s.expected).toLocaleString('id-ID',{maximumFractionDigits:2})+'%':'-'}</div><div class="sub">Qty terpenuhi / master</div></div></div>`;}
+function openReconciliation(){reconFilter={start:dash.start,end:dash.end,type:'all',status:'all',search:''};navigate('reconciliation');}
+function filteredReconciliation(){const f=reconFilter;return reconciliationRows(f.start,f.end,f.type).filter(r=>(f.status==='all'||r.status===f.status)&&(!f.search||norm(r.number).includes(norm(f.search))));}
+function renderReconciliation(){if(!isManager())return;const f=reconFilter;const rows=filteredReconciliation();const opt=(v,l,selected)=>`<option value="${esc(v)}" ${v===selected?'selected':''}>${esc(l)}</option>`;
+ document.getElementById('content').innerHTML=`<section class="panel"><h3>Reconciliation & Outstanding Monitoring</h3><p class="muted">Perbandingan master dengan jumlah seluruh loader per tanggal, jenis dan nomor mobil/container. Kosongkan tanggal untuk semua periode. KPI mengikuti tanggal dan jenis, bukan filter status atau pencarian.</p><div class="filters"><div><label>Dari tanggal</label><input type="date" id="recStart" value="${esc(f.start)}"></div><div><label>Sampai tanggal</label><input type="date" id="recEnd" value="${esc(f.end)}"></div><div><label>Jenis</label><select id="recType">${['all','INBOUND','OUTBOUND'].map(v=>opt(v,v==='all'?'Semua':v,f.type)).join('')}</select></div><div><label>Status</label><select id="recStatus">${['all','Belum Input','Parsial','Selesai','Kelebihan','Di Luar Master'].map(v=>opt(v,v==='all'?'Semua':v,f.status)).join('')}</select></div><div><label>Cari nomor</label><input id="recSearch" value="${esc(f.search)}"></div><button class="btn" onclick="applyReconciliation()">Terapkan Filter</button><button class="btn light" onclick="exportReconciliation()">Export CSV</button></div></section>${reconciliationCards(reconciliationRows(f.start,f.end,f.type))}<section class="panel"><h3>Detail Mobil / Container (${rows.length})</h3><div class="tablewrap"><table><thead><tr><th>Tanggal</th><th>Jenis</th><th>Nomor</th><th>Master</th><th>Aktual</th><th>Kurang</th><th>Lebih</th><th>Status</th><th>Loader yang input</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${dateFmt(r.date)}</td><td>${esc(r.type)}</td><td>${esc(r.number)}</td><td>${fmt(r.expected)}</td><td>${fmt(r.actual)}</td><td>${fmt(r.short)}</td><td>${fmt(r.extra)}</td><td><span class="tag ${r.status==='Selesai'?'ok':r.status==='Parsial'?'wait':'bad'}">${esc(r.status)}</span></td><td>${esc([...r.loaders].join(', ')||'-')}</td></tr>`).join('')}</tbody></table></div>${rows.length?'':'<p class="muted">Tidak ada data untuk filter ini.</p>'}</section>`;
+}
+function applyReconciliation(){const start=document.getElementById('recStart').value,end=document.getElementById('recEnd').value;if(start&&end&&start>end)return notify('Periode tidak valid.');reconFilter={start,end,type:document.getElementById('recType').value,status:document.getElementById('recStatus').value,search:document.getElementById('recSearch').value.trim()};renderReconciliation();}
+function exportReconciliation(){if(!isManager())return;const safe=v=>/^[=+\-@\t\r]/.test(String(v))?"'"+v:v;downloadCSV('loaderops_reconciliation.csv',['Tanggal','Jenis','Nomor','Master','Aktual','Kurang','Lebih','Status','Loader'],filteredReconciliation().map(r=>[r.date,r.type,safe(r.number),r.expected,r.actual,r.short,r.extra,r.status,safe([...r.loaders].join(', '))]));}
+
 function renderDashboard() {
   if(!isManager())return;
 
@@ -870,7 +906,7 @@ function renderDashboard() {
     </div>
 
     <section class="panel">
-      <h3>Performa Carton per Loader</h3>
+      <h3>Reconciliation — Semua Loader</h3><p class="muted">Mengikuti periode dashboard, tidak mengikuti filter loader karena master tidak menentukan penugasan loader.</p>${reconciliationCards(reconciliationRows(dash.start,dash.end))}<button class="btn" onclick="openReconciliation()">Lihat Detail Outstanding</button></section><section class="panel"><h3>Performa Carton per Loader</h3>
       <div class="legend">
         <span><i class="dot blue"></i>Inbound</span>
         <span><i class="dot orange"></i>Outbound</span>
@@ -1677,6 +1713,15 @@ async function startApp() {
 
 startApp();
 
+</script>
+<button id="installPWA" hidden style="position:fixed;bottom:12px;left:12px;z-index:90" class="btn green">Install LoaderOPS</button>
+<script>
+let installPrompt;
+const installButton = document.getElementById('installPWA');
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt=e; installButton.hidden=false; });
+installButton.addEventListener('click', async () => { if (!installPrompt) return; await installPrompt.prompt(); installPrompt=null; installButton.hidden=true; });
+window.addEventListener('appinstalled', () => { installPrompt=null; installButton.hidden=true; });
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(console.error));
 </script>
 </body>
 </html>
